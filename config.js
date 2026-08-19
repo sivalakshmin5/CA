@@ -286,6 +286,17 @@ const SITE_CONFIG = {
       href:
         "#our-story"
     },
+   
+    {
+     id:
+       "client-experiences",
+ 
+     label:
+       "Client Reviews",
+ 
+     href:
+       "#client-experiences"
+   },
 
     {
       id:
