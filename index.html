@@ -1,0 +1,1537 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+
+  <!-- =====================================================
+       BASIC DOCUMENT
+  ====================================================== -->
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0b0f14"
+  >
+
+  <meta
+    name="color-scheme"
+    content="dark light"
+  >
+
+  <title id="document-title"></title>
+
+  <meta
+    id="meta-description"
+    name="description"
+    content=""
+  >
+
+  <meta
+    name="robots"
+    content="index, follow"
+  >
+
+  <link
+    id="canonical-url"
+    rel="canonical"
+    href=""
+  >
+
+
+  <!-- =====================================================
+       OPEN GRAPH
+  ====================================================== -->
+
+  <meta
+    id="og-title"
+    property="og:title"
+    content=""
+  >
+
+  <meta
+    id="og-description"
+    property="og:description"
+    content=""
+  >
+
+  <meta
+    id="og-url"
+    property="og:url"
+    content=""
+  >
+
+  <meta
+    id="og-image"
+    property="og:image"
+    content=""
+  >
+
+  <meta
+    property="og:type"
+    content="website"
+  >
+
+  <meta
+    id="og-locale"
+    property="og:locale"
+    content=""
+  >
+
+
+  <!-- =====================================================
+       TWITTER / X
+  ====================================================== -->
+
+  <meta
+    id="twitter-title"
+    name="twitter:title"
+    content=""
+  >
+
+  <meta
+    id="twitter-description"
+    name="twitter:description"
+    content=""
+  >
+
+  <meta
+    id="twitter-image"
+    name="twitter:image"
+    content=""
+  >
+
+  <meta
+    name="twitter:card"
+    content="summary_large_image"
+  >
+
+
+  <!-- =====================================================
+       FAVICON
+  ====================================================== -->
+
+  <link
+    id="site-favicon"
+    rel="icon"
+    type="image/svg+xml"
+    href=""
+  >
+
+
+  <!-- =====================================================
+       STYLES
+  ====================================================== -->
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+
+  <!-- =====================================================
+       ICONS
+  ====================================================== -->
+
+  <script
+    src="https://unpkg.com/lucide@latest"
+    defer
+  ></script>
+
+
+  <!-- =====================================================
+       STRUCTURED DATA
+
+       script.js will populate this from config.js.
+  ====================================================== -->
+
+  <script
+    id="structured-data"
+    type="application/ld+json"
+  ></script>
+
+</head>
+
+
+<body>
+
+
+  <!-- =====================================================
+       PAGE LOADER
+  ====================================================== -->
+
+  <div
+    id="page-loader"
+    class="page-loader"
+    aria-hidden="true"
+  >
+
+    <div class="loader-mark">
+      <span id="loader-initials"></span>
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       HEADER
+  ====================================================== -->
+
+  <header
+    id="site-header"
+    class="site-header"
+  >
+
+    <div class="container header-inner">
+
+
+      <!-- BRAND -->
+
+      <a
+        id="brand-link"
+        href="#top"
+        class="brand"
+        aria-label=""
+      >
+
+        <img
+          id="brand-logo"
+          class="brand-logo"
+          src=""
+          alt=""
+        >
+
+      </a>
+
+
+      <!-- DESKTOP NAVIGATION -->
+
+      <nav
+        id="desktop-navigation"
+        class="desktop-navigation"
+        aria-label="Main navigation"
+      >
+
+        <!-- Generated from config.js -->
+
+      </nav>
+
+
+      <!-- HEADER ACTIONS -->
+
+      <div class="header-actions">
+
+
+        <!-- THEME -->
+
+        <button
+          id="theme-toggle"
+          class="icon-button theme-toggle"
+          type="button"
+          aria-label=""
+          title=""
+        >
+
+          <i
+            data-lucide="sun"
+            class="theme-icon theme-icon-light"
+          ></i>
+
+          <i
+            data-lucide="moon"
+            class="theme-icon theme-icon-dark"
+          ></i>
+
+        </button>
+
+
+        <!-- HEADER WHATSAPP -->
+
+        <a
+          id="header-whatsapp"
+          href="#"
+          class="button button-small button-whatsapp"
+        >
+
+          <i data-lucide="message-circle"></i>
+
+          <span id="header-whatsapp-label"></span>
+
+        </a>
+
+
+        <!-- MOBILE MENU -->
+
+        <button
+          id="mobile-menu-button"
+          class="icon-button mobile-menu-button"
+          type="button"
+          aria-label="Open menu"
+          aria-expanded="false"
+        >
+
+          <i data-lucide="menu"></i>
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- MOBILE NAVIGATION -->
+
+    <nav
+      id="mobile-navigation"
+      class="mobile-navigation"
+      aria-label="Mobile navigation"
+    >
+
+      <!-- Generated from config.js -->
+
+    </nav>
+
+  </header>
+
+
+  <!-- =====================================================
+       MAIN
+  ====================================================== -->
+
+  <main id="top">
+
+
+    <!-- ===================================================
+         HERO
+    ==================================================== -->
+
+    <section
+      id="hero"
+      class="hero section"
+    >
+
+      <div class="container hero-grid">
+
+
+        <div class="hero-content">
+
+
+          <div class="eyebrow">
+
+            <span class="eyebrow-dot"></span>
+
+            <span id="hero-eyebrow"></span>
+
+          </div>
+
+
+          <h1 id="hero-title"></h1>
+
+
+          <p
+            id="hero-description"
+            class="hero-description"
+          ></p>
+
+
+          <div class="hero-actions">
+
+            <a
+              id="hero-primary-action"
+              href="#"
+              class="button button-primary"
+            ></a>
+
+            <a
+              id="hero-secondary-action"
+              href="#"
+              class="button button-secondary"
+            ></a>
+
+          </div>
+
+
+          <div
+            id="hero-supporting-text"
+            class="hero-supporting"
+          ></div>
+
+
+          <div class="hero-brand-line">
+
+            <span id="hero-brand-line"></span>
+
+          </div>
+
+        </div>
+
+
+        <!-- HERO VISUAL -->
+
+        <div class="hero-visual">
+
+          <div class="hero-visual-panel">
+
+            <div class="portrait-placeholder">
+
+              <img
+                id="hero-portrait"
+                src=""
+                alt=""
+                class="hero-portrait-image"
+              >
+
+              <div
+                id="hero-portrait-fallback"
+                class="portrait-placeholder-content"
+              >
+
+                <i data-lucide="user-round"></i>
+
+                <span id="hero-placeholder-title"></span>
+
+                <small id="hero-placeholder-text"></small>
+
+              </div>
+
+            </div>
+
+
+            <div class="hero-floating-card">
+
+              <div class="floating-icon">
+
+                <i data-lucide="check"></i>
+
+              </div>
+
+              <div>
+
+                <strong id="hero-established"></strong>
+
+                <span id="hero-established-label"></span>
+
+              </div>
+
+            </div>
+
+
+            <div class="hero-coverage-card">
+
+              <span id="hero-coverage-label"></span>
+
+              <strong id="hero-coverage"></strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         QUICK ALERT
+    ==================================================== -->
+
+    <section
+      id="quick-alert"
+      class="quick-alert-section"
+      aria-label="Quick Alert"
+    >
+
+      <div class="container">
+
+        <div
+          id="quick-alert-content"
+          class="quick-alert"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         SERVICES
+    ==================================================== -->
+
+    <section
+      id="services"
+      class="section services-section"
+    >
+
+      <div class="container">
+
+
+        <div class="section-heading">
+
+          <span
+            id="services-eyebrow"
+            class="section-eyebrow"
+          ></span>
+
+          <h2 id="services-title"></h2>
+
+          <p id="services-description"></p>
+
+        </div>
+
+
+        <div
+          id="services-grid"
+          class="services-grid"
+        ></div>
+
+
+        <!-- NOT SURE -->
+
+        <div
+          id="services-not-sure"
+          class="not-sure-card"
+        >
+
+          <div class="not-sure-icon">
+
+            <i data-lucide="circle-help"></i>
+
+          </div>
+
+          <div class="not-sure-content">
+
+            <span
+              id="services-not-sure-eyebrow"
+              class="mini-label"
+            ></span>
+
+            <h3 id="services-not-sure-title"></h3>
+
+            <p id="services-not-sure-description"></p>
+
+          </div>
+
+          <a
+            id="services-not-sure-action"
+            href="#"
+            class="button button-outline"
+          ></a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         WHO WE HELP
+    ==================================================== -->
+
+    <section
+      id="who-we-help"
+      class="section audience-section"
+    >
+
+      <div class="container">
+
+
+        <div class="section-heading">
+
+          <span
+            id="audience-eyebrow"
+            class="section-eyebrow"
+          ></span>
+
+          <h2 id="audience-title"></h2>
+
+          <p id="audience-description"></p>
+
+        </div>
+
+
+        <div
+          id="audience-grid"
+          class="audience-grid"
+        ></div>
+
+
+        <!-- INDUSTRIES -->
+
+        <div
+          id="industries"
+          class="industries-block"
+        >
+
+          <div class="industries-heading">
+
+            <span
+              id="industries-eyebrow"
+              class="mini-label"
+            ></span>
+
+            <h3 id="industries-title"></h3>
+
+            <p id="industries-description"></p>
+
+          </div>
+
+
+          <div
+            id="industries-grid"
+            class="industries-grid"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         REVIEWS
+    ==================================================== -->
+
+    <section
+      id="reviews"
+      class="section reviews-section"
+    >
+
+      <div class="container">
+
+
+        <div class="section-heading section-heading-split">
+
+          <div>
+
+            <span
+              id="reviews-eyebrow"
+              class="section-eyebrow"
+            ></span>
+
+            <h2 id="reviews-title"></h2>
+
+            <p id="reviews-description"></p>
+
+          </div>
+
+
+          <a
+            id="google-reviews-link"
+            href="#"
+            class="text-link"
+            target="_blank"
+            rel="noopener"
+          ></a>
+
+        </div>
+
+
+        <div
+          id="testimonials-grid"
+          class="testimonials-grid"
+        ></div>
+
+
+        <div
+          id="reviews-empty"
+          class="reviews-empty"
+          hidden
+        >
+
+          <i data-lucide="message-square-quote"></i>
+
+          <p>
+            <!-- Generated by script.js -->
+          </p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         OUR STORY
+    ==================================================== -->
+
+    <section
+      id="our-story"
+      class="section story-section"
+    >
+
+      <div class="container">
+
+
+        <div class="story-intro">
+
+          <span
+            id="story-eyebrow"
+            class="section-eyebrow"
+          ></span>
+
+          <h2 id="story-title"></h2>
+
+          <p id="story-description"></p>
+
+        </div>
+
+
+        <div
+          id="career-timeline"
+          class="career-timeline"
+        ></div>
+
+
+        <div class="countries-strip">
+
+          <span class="mini-label">
+            PROFESSIONAL EXPOSURE
+          </span>
+
+          <div
+            id="countries"
+            class="countries"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         DIGITAL OFFICE
+    ==================================================== -->
+
+    <section
+      id="digital-office"
+      class="section digital-office-section"
+    >
+
+      <div class="container digital-office-grid">
+
+
+        <div class="digital-office-content">
+
+          <span
+            id="digital-office-eyebrow"
+            class="section-eyebrow"
+          ></span>
+
+          <h2 id="digital-office-title"></h2>
+
+          <p id="digital-office-description"></p>
+
+
+          <div
+            id="digital-benefits"
+            class="digital-benefits"
+          ></div>
+
+
+          <div class="digital-closing-line">
+
+            <i data-lucide="sparkles"></i>
+
+            <strong id="digital-office-closing"></strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- DIGITAL VISUAL -->
+
+        <div class="digital-office-visual">
+
+          <div class="cloud-visual">
+
+            <div class="cloud-main-icon">
+
+              <i data-lucide="cloud"></i>
+
+            </div>
+
+            <div class="cloud-ring cloud-ring-one"></div>
+
+            <div class="cloud-ring cloud-ring-two"></div>
+
+            <div class="cloud-node node-one">
+              <i data-lucide="file-text"></i>
+            </div>
+
+            <div class="cloud-node node-two">
+              <i data-lucide="users"></i>
+            </div>
+
+            <div class="cloud-node node-three">
+              <i data-lucide="smartphone"></i>
+            </div>
+
+            <div class="cloud-node node-four">
+              <i data-lucide="laptop"></i>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         START HERE
+    ==================================================== -->
+
+    <section
+      id="start-here"
+      class="section start-here-section"
+    >
+
+      <div class="container">
+
+
+        <div class="section-heading centered">
+
+          <span
+            id="start-eyebrow"
+            class="section-eyebrow"
+          ></span>
+
+          <h2 id="start-title"></h2>
+
+          <p id="start-description"></p>
+
+        </div>
+
+
+        <div
+          id="start-steps"
+          class="start-steps"
+        ></div>
+
+
+        <div class="whats-on-your-mind">
+
+          <div class="mind-heading">
+
+            <span
+              id="mind-eyebrow"
+              class="mini-label"
+            ></span>
+
+            <h3 id="mind-title"></h3>
+
+            <p id="mind-description"></p>
+
+          </div>
+
+
+          <div
+            id="whatsapp-options"
+            class="whatsapp-options"
+          ></div>
+
+
+          <div
+            id="whatsapp-option-result"
+            class="whatsapp-option-result"
+            hidden
+          >
+
+            <span>
+              We'll start the conversation on WhatsApp.
+            </span>
+
+            <a
+              href="#"
+              id="selected-whatsapp-link"
+              class="button button-primary"
+              target="_blank"
+              rel="noopener"
+            >
+
+              Continue to WhatsApp
+
+              <i data-lucide="arrow-up-right"></i>
+
+            </a>
+
+          </div>
+
+        </div>
+
+
+        <div class="start-reassurance">
+
+          <i data-lucide="heart-handshake"></i>
+
+          <span id="start-reassurance"></span>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         IMPORTANT UPDATES
+    ==================================================== -->
+
+    <section
+      id="updates"
+      class="section updates-section"
+    >
+
+      <div class="container">
+
+
+        <div class="section-heading section-heading-split">
+
+          <div>
+
+            <span
+              id="updates-eyebrow"
+              class="section-eyebrow"
+            ></span>
+
+            <h2 id="updates-title"></h2>
+
+            <p id="updates-description"></p>
+
+          </div>
+
+
+          <div class="updates-note">
+
+            <i data-lucide="bell"></i>
+
+            <span id="updates-status-label"></span>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="updates-grid"
+          class="updates-grid"
+        ></div>
+
+
+        <div
+          id="updates-empty"
+          class="updates-empty"
+          hidden
+        >
+
+          <i data-lucide="calendar-check"></i>
+
+          <h3 id="updates-empty-title"></h3>
+
+          <p id="updates-empty-description"></p>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         CONTACT METHODS
+    ==================================================== -->
+
+    <section
+      id="how-we-work"
+      class="section contact-methods-section"
+    >
+
+      <div class="container">
+
+
+        <div class="section-heading centered">
+
+          <span
+            id="contact-methods-eyebrow"
+            class="section-eyebrow"
+          ></span>
+
+          <h2 id="contact-methods-title"></h2>
+
+          <p id="contact-methods-description"></p>
+
+        </div>
+
+
+        <div
+          id="contact-methods-grid"
+          class="contact-methods-grid"
+        ></div>
+
+
+        <!-- APPOINTMENT -->
+
+        <div
+          id="appointment-card"
+          class="appointment-card"
+        >
+
+          <div class="appointment-icon">
+
+            <i data-lucide="calendar-clock"></i>
+
+          </div>
+
+          <div class="appointment-content">
+
+            <span
+              id="appointment-eyebrow"
+              class="mini-label"
+            ></span>
+
+            <h3 id="appointment-title"></h3>
+
+            <p id="appointment-description"></p>
+
+          </div>
+
+          <a
+            id="appointment-button"
+            href="#"
+            class="button button-outline"
+          ></a>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         FAQ
+    ==================================================== -->
+
+    <section
+      id="faq"
+      class="section faq-section"
+    >
+
+      <div class="container faq-grid">
+
+
+        <div class="faq-intro">
+
+          <span
+            id="faq-eyebrow"
+            class="section-eyebrow"
+          ></span>
+
+          <h2 id="faq-title"></h2>
+
+          <p id="faq-description"></p>
+
+
+          <a
+            id="faq-action"
+            href="#contact"
+            class="button button-secondary"
+          ></a>
+
+        </div>
+
+
+        <div
+          id="faq-list"
+          class="faq-list"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         CONTACT
+    ==================================================== -->
+
+    <section
+      id="contact"
+      class="section contact-section"
+    >
+
+      <div class="container">
+
+
+        <div class="contact-main">
+
+
+          <div class="contact-heading">
+
+            <span
+              id="contact-eyebrow"
+              class="section-eyebrow"
+            ></span>
+
+            <h2 id="contact-title"></h2>
+
+            <p id="contact-description"></p>
+
+            <strong id="contact-reassurance"></strong>
+
+          </div>
+
+
+          <div class="contact-actions">
+
+
+            <a
+              id="contact-call"
+              href="#"
+              class="contact-action contact-action-primary"
+            >
+
+              <div class="contact-action-icon">
+                <i data-lucide="phone"></i>
+              </div>
+
+              <div>
+
+                <span>
+                  Call
+                </span>
+
+                <strong id="contact-phone-display"></strong>
+
+              </div>
+
+              <i
+                data-lucide="arrow-up-right"
+                class="contact-arrow"
+              ></i>
+
+            </a>
+
+
+            <a
+              id="contact-whatsapp"
+              href="#"
+              class="contact-action"
+            >
+
+              <div class="contact-action-icon">
+                <i data-lucide="message-circle"></i>
+              </div>
+
+              <div>
+
+                <span>
+                  WhatsApp
+                </span>
+
+                <strong id="contact-whatsapp-display"></strong>
+
+              </div>
+
+              <i
+                data-lucide="arrow-up-right"
+                class="contact-arrow"
+              ></i>
+
+            </a>
+
+
+            <a
+              id="contact-email"
+              href="#"
+              class="contact-action"
+            >
+
+              <div class="contact-action-icon">
+                <i data-lucide="mail"></i>
+              </div>
+
+              <div>
+
+                <span>
+                  Email
+                </span>
+
+                <strong id="contact-email-display"></strong>
+
+              </div>
+
+              <i
+                data-lucide="arrow-up-right"
+                class="contact-arrow"
+              ></i>
+
+            </a>
+
+
+            <a
+              id="contact-maps"
+              href="#"
+              class="contact-action"
+              target="_blank"
+              rel="noopener"
+            >
+
+              <div class="contact-action-icon">
+                <i data-lucide="map-pin"></i>
+              </div>
+
+              <div>
+
+                <span>
+                  Visit
+                </span>
+
+                <strong id="contact-office-name"></strong>
+
+              </div>
+
+              <i
+                data-lucide="arrow-up-right"
+                class="contact-arrow"
+              ></i>
+
+            </a>
+
+          </div>
+
+        </div>
+
+
+        <!-- OFFICE DETAILS -->
+
+        <div class="contact-details">
+
+
+          <div class="address-card">
+
+            <span
+              id="find-us-label"
+              class="mini-label"
+            ></span>
+
+            <h3 id="contact-firm-name"></h3>
+
+            <p id="contact-address"></p>
+
+            <span
+              id="contact-landmark"
+              class="landmark"
+            >
+
+              <i data-lucide="map-pin"></i>
+
+              <span></span>
+
+            </span>
+
+
+            <a
+              id="address-directions"
+              href="#"
+              class="text-link"
+              target="_blank"
+              rel="noopener"
+            ></a>
+
+          </div>
+
+
+          <div class="office-hours-card">
+
+            <span
+              id="hours-label"
+              class="mini-label"
+            ></span>
+
+            <div class="hours">
+
+              <strong id="office-hours"></strong>
+
+              <span id="office-closed-note"></span>
+
+            </div>
+
+
+            <div class="visit-note">
+
+              <i data-lucide="door-open"></i>
+
+              <span id="office-visit-policy"></span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div
+          id="contact-final-message"
+          class="final-message"
+        ></div>
+
+      </div>
+
+    </section>
+
+
+  </main>
+
+
+  <!-- =====================================================
+       FOOTER
+  ====================================================== -->
+
+  <footer
+    id="site-footer"
+    class="site-footer"
+  >
+
+    <div class="container">
+
+
+      <div class="footer-main">
+
+
+        <!-- FOOTER BRAND -->
+
+        <div class="footer-brand">
+
+          <img
+            id="footer-logo"
+            class="footer-logo"
+            src=""
+            alt=""
+          >
+
+          <p id="footer-tagline"></p>
+
+        </div>
+
+
+        <!-- FOOTER NAV -->
+
+        <div class="footer-navigation">
+
+          <span
+            id="footer-explore-label"
+            class="footer-title"
+          ></span>
+
+          <div id="footer-navigation-links"></div>
+
+        </div>
+
+
+        <!-- FOOTER SOCIAL -->
+
+        <div class="footer-social">
+
+          <span
+            id="footer-social-title"
+            class="footer-title"
+          ></span>
+
+          <div
+            id="footer-social-links"
+            class="footer-social-links"
+          ></div>
+
+        </div>
+
+
+        <!-- FOOTER CONTACT -->
+
+        <div class="footer-contact">
+
+          <span
+            id="footer-contact-title"
+            class="footer-title"
+          ></span>
+
+          <a
+            id="footer-phone"
+            href="#"
+          ></a>
+
+          <a
+            id="footer-email"
+            href="#"
+          ></a>
+
+          <a
+            id="footer-whatsapp"
+            href="#"
+          ></a>
+
+        </div>
+
+      </div>
+
+
+      <!-- FOOTER BOTTOM -->
+
+      <div class="footer-bottom">
+
+
+        <div class="footer-legal">
+
+          <span id="footer-copyright"></span>
+
+          <a
+            id="footer-privacy-link"
+            href="#privacy"
+          ></a>
+
+          <a
+            id="footer-disclaimer-link"
+            href="#disclaimer"
+          ></a>
+
+        </div>
+
+
+        <div
+          id="footer-location"
+          class="footer-location"
+        >
+
+          <i data-lucide="map-pin"></i>
+
+          <span></span>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </footer>
+
+
+  <!-- =====================================================
+       PRIVACY MODAL
+  ====================================================== -->
+
+  <div
+    id="privacy"
+    class="legal-modal"
+    hidden
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="privacy-title"
+  >
+
+    <div class="legal-modal-content">
+
+      <button
+        class="legal-modal-close"
+        type="button"
+        aria-label="Close"
+      >
+
+        <i data-lucide="x"></i>
+
+      </button>
+
+      <span
+        id="privacy-eyebrow"
+        class="section-eyebrow"
+      ></span>
+
+      <h2 id="privacy-title"></h2>
+
+      <div id="privacy-content"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       DISCLAIMER MODAL
+  ====================================================== -->
+
+  <div
+    id="disclaimer"
+    class="legal-modal"
+    hidden
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="disclaimer-title"
+  >
+
+    <div class="legal-modal-content">
+
+      <button
+        class="legal-modal-close"
+        type="button"
+        aria-label="Close"
+      >
+
+        <i data-lucide="x"></i>
+
+      </button>
+
+      <span
+        id="disclaimer-eyebrow"
+        class="section-eyebrow"
+      ></span>
+
+      <h2 id="disclaimer-title"></h2>
+
+      <div id="disclaimer-content"></div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =====================================================
+       MOBILE STICKY ACTIONS
+  ====================================================== -->
+
+  <div
+    id="mobile-sticky-actions"
+    class="mobile-sticky-actions"
+  ></div>
+
+
+  <!-- =====================================================
+       LOAD CONFIG FIRST
+  ====================================================== -->
+
+  <script src="config.js"></script>
+
+
+  <!-- =====================================================
+       LOAD APPLICATION LOGIC SECOND
+  ====================================================== -->
+
+  <script src="script.js"></script>
+
+
+</body>
+
+</html>
