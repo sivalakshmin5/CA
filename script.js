@@ -1,80 +1,41 @@
-/*
-================================================================
- PAVAN REDDY & CO. — WEBSITE APPLICATION
-================================================================
+/* ================================================================
+   PAVAN REDDY & CO.
+   WEBSITE SCRIPT
+   ================================================================
 
- ARCHITECTURE
- ------------
+   ARCHITECTURE
 
- config.js
-     ↓
- SITE_CONFIG
-     ↓
- script.js
-     ↓
- index.html
-     ↓
- style.css
+   config.js  → content / configuration
+   script.js  → behaviour
+   index.html → structure
+   style.css  → design
 
+   IMPORTANT:
+   - Keep website content in config.js wherever practical.
+   - Keep behaviour here.
+   - Avoid hardcoding business-specific information here.
 
- PRINCIPLE
- ---------
-
- This file contains BEHAVIOUR and RENDERING.
-
- Business content should NOT be hard-coded here when it
- already exists in config.js.
-
- If something is business content:
-     → config.js
-
- If something is page structure:
-     → index.html
-
- If something is visual:
-     → style.css
-
- If something is behaviour:
-     → script.js
-
-================================================================
-*/
+================================================================ */
 
 
-"use strict";
-
-
-/* ==============================================================
-   GLOBAL APPLICATION
-============================================================== */
+/* ================================================================
+   01. GLOBAL APP STATE
+================================================================ */
 
 const APP = {
 
-  initialized:
-    false,
-
   currentTheme:
-    null,
+    "dark",
 
-  selectedWhatsAppOption:
-    null,
-
-  updateTimer:
-    null
+  initialized:
+    false
 
 };
 
 
-/* ==============================================================
-   DOM HELPERS
-============================================================== */
-
-
-/*
---------------------------------------------------------------
- Get an element by ID
---------------------------------------------------------------
-*/
+/* ================================================================
+   02. HELPERS
+================================================================ */
 
 function $(id) {
 
@@ -82,12 +43,6 @@ function $(id) {
 
 }
 
-
-/*
---------------------------------------------------------------
- Set text safely
---------------------------------------------------------------
-*/
 
 function setText(id, value) {
 
@@ -104,13 +59,7 @@ function setText(id, value) {
 }
 
 
-/*
---------------------------------------------------------------
- Set HTML only where dynamic markup is intentionally required
---------------------------------------------------------------
-*/
-
-function setHTML(id, html) {
+function setHTML(id, value) {
 
   const element =
     $(id);
@@ -120,18 +69,16 @@ function setHTML(id, html) {
   }
 
   element.innerHTML =
-    html ?? "";
+    value ?? "";
 
 }
 
 
-/*
---------------------------------------------------------------
- Set an attribute
---------------------------------------------------------------
-*/
-
-function setAttribute(id, attribute, value) {
+function setAttribute(
+  id,
+  attribute,
+  value
+) {
 
   const element =
     $(id);
@@ -148,13 +95,10 @@ function setAttribute(id, attribute, value) {
 }
 
 
-/*
---------------------------------------------------------------
- Show / hide
---------------------------------------------------------------
-*/
-
-function setVisible(id, visible) {
+function setVisible(
+  id,
+  visible
+) {
 
   const element =
     $(id);
@@ -169,37 +113,34 @@ function setVisible(id, visible) {
 }
 
 
-/*
---------------------------------------------------------------
- Escape HTML
-
- Used when rendering external/dynamic content such as
- Google Sheet updates.
---------------------------------------------------------------
-*/
-
 function escapeHTML(value) {
 
-  return String(value ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+  return String(
+    value ?? ""
+  )
+    .replace(
+      /&/g,
+      "&amp;"
+    )
+    .replace(
+      /</g,
+      "&lt;"
+    )
+    .replace(
+      />/g,
+      "&gt;"
+    )
+    .replace(
+      /"/g,
+      "&quot;"
+    )
+    .replace(
+      /'/g,
+      "&#039;"
+    );
 
 }
 
-
-/* ==============================================================
-   URL HELPERS
-============================================================== */
-
-
-/*
---------------------------------------------------------------
- Resolve a relative asset URL
---------------------------------------------------------------
-*/
 
 function resolveAsset(path) {
 
@@ -212,30 +153,81 @@ function resolveAsset(path) {
 }
 
 
-/*
---------------------------------------------------------------
- Create action URL
---------------------------------------------------------------
-*/
+function refreshIcons() {
 
-function getActionUrl(type, message = "") {
+  if (
+    window.lucide &&
+    typeof window.lucide.createIcons ===
+      "function"
+  ) {
 
-  switch (type) {
+    window.lucide.createIcons();
+
+  }
+
+}
+
+
+/* ================================================================
+   03. URL HELPERS
+================================================================ */
+
+function getPhoneUrl() {
+
+  return `tel:${SITE_CONFIG.contact.phone.value}`;
+
+}
+
+
+function getEmailUrl() {
+
+  return `mailto:${SITE_CONFIG.contact.email.value}`;
+
+}
+
+
+function getMapsUrl() {
+
+  return SITE_CONFIG.office.mapsUrl;
+
+}
+
+
+function getDefaultWhatsAppUrl() {
+
+  const number =
+    SITE_CONFIG.contact.whatsapp.value;
+
+  const message =
+    SITE_CONFIG.contact.whatsapp.defaultMessage ||
+    "";
+
+  return `https://wa.me/${number}?text=${encodeURIComponent(
+    message
+  )}`;
+
+}
+
+
+function getActionUrl(
+  actionType
+) {
+
+  switch (
+    actionType
+  ) {
 
     case "phone":
       return getPhoneUrl();
+
+    case "whatsapp":
+      return getDefaultWhatsAppUrl();
 
     case "email":
       return getEmailUrl();
 
     case "maps":
       return getMapsUrl();
-
-    case "whatsapp":
-      return createWhatsAppUrl(
-        message ||
-        SITE_CONFIG.contact.whatsapp.defaultMessage
-      );
 
     default:
       return "#";
@@ -245,247 +237,202 @@ function getActionUrl(type, message = "") {
 }
 
 
-/* ==============================================================
-   INITIAL PAGE SETUP
-============================================================== */
+function getAppointmentWhatsAppUrl() {
 
-function initializeApplication() {
+  const appointment =
+    SITE_CONFIG.appointments;
 
-  if (APP.initialized) {
-    return;
-  }
+  const number =
+    SITE_CONFIG.contact.whatsapp.value;
 
-  if (
-    typeof SITE_CONFIG === "undefined"
-  ) {
+  const message =
+    appointment.message ||
+    SITE_CONFIG.contact.whatsapp.defaultMessage ||
+    "";
 
-    console.error(
-      "SITE_CONFIG is not available. Make sure config.js loads before script.js."
-    );
+  return `https://wa.me/${number}?text=${encodeURIComponent(
+    message
+  )}`;
 
-    return;
-  }
+}
 
 
-  APP.initialized =
-    true;
+/* ================================================================
+   04. NAVIGATION
+================================================================ */
+
+function renderNavigation() {
+
+  const desktop =
+    $("desktop-navigation");
+
+  const mobile =
+    $("mobile-navigation");
+
+  const navigation =
+    SITE_CONFIG.navigation || [];
 
 
   /*
-  Render in logical order
+  Desktop
   */
 
-  renderDocumentMetadata();
+  if (desktop) {
 
-  renderBrand();
+    desktop.innerHTML =
+      "";
 
-  renderNavigation();
 
-  renderHero();
+    navigation.forEach(
+      item => {
 
-  renderQuickAlert();
+        const link =
+          document.createElement("a");
 
-  renderServices();
+        link.href =
+          item.href === "#reviews"
+            ? "#client-experiences"
+            : item.href;
 
-  renderAudiences();
+        link.textContent =
+          item.label;
 
-  renderIndustries();
+        desktop.appendChild(
+          link
+        );
 
-  renderReviews();
+      }
+    );
 
-  renderProfessionalStory();
+  }
 
-  renderDigitalOffice();
 
-  renderStartHere();
+  /*
+  Mobile
+  */
 
-  renderUpdates();
+  if (mobile) {
 
-  renderContactMethods();
+    mobile.innerHTML =
+      "";
 
-  renderAppointment();
 
-  renderFAQ();
+    navigation.forEach(
+      item => {
 
-  renderContact();
+        const link =
+          document.createElement("a");
 
-  renderFooter();
+        link.href =
+          item.href === "#reviews"
+            ? "#client-experiences"
+            : item.href;
 
-  renderLegal();
+        link.textContent =
+          item.label;
 
-  renderMobileActions();
+        mobile.appendChild(
+          link
+        );
 
-  initializeTheme();
+      }
+    );
 
-  initializeMobileMenu();
 
-  initializeSmoothScrolling();
+    /*
+    WhatsApp action
+    */
 
-  initializeModalHandling();
+    const whatsapp =
+      document.createElement("a");
 
-  initializeWhatsAppSelection();
+    whatsapp.href =
+      getDefaultWhatsAppUrl();
 
-  initializeImageFallbacks();
+    whatsapp.className =
+      "mobile-menu-whatsapp";
 
-  initializeKeyboardAccessibility();
+    whatsapp.target =
+      "_blank";
+
+    whatsapp.rel =
+      "noopener";
+
+    whatsapp.innerHTML = `
+
+      <i data-lucide="message-circle"></i>
+
+      <span>
+        ${
+          SITE_CONFIG.mobile.menuWhatsAppLabel ||
+          "WhatsApp"
+        }
+      </span>
+
+    `;
+
+    mobile.appendChild(
+      whatsapp
+    );
+
+  }
+
 
   refreshIcons();
 
-  initializeUpdates();
-
-  hidePageLoader();
-
 }
 
 
 /* ==============================================================
-   DOCUMENT METADATA
+   NAVIGATION NORMALIZATION
 ============================================================== */
 
-function renderDocumentMetadata() {
+function normalizeNavigation() {
 
-  const seo =
-    SITE_CONFIG.seo;
-
-  const website =
-    SITE_CONFIG.website;
+  const navigation =
+    SITE_CONFIG.navigation || [];
 
 
-  /*
-  Title
-  */
-
-  document.title =
-    seo.title;
-
-
-  /*
-  Description
-  */
-
-  setAttribute(
-    "meta-description",
-    "content",
-    seo.description
-  );
+  const hasClientExperiences =
+    navigation.some(
+      item =>
+        item &&
+        (
+          item.href ===
+            "#client-experiences" ||
+          item.href ===
+            "#reviews"
+        )
+    );
 
 
-  /*
-  Canonical
-  */
+  if (!hasClientExperiences) {
 
-  setAttribute(
-    "canonical-url",
-    "href",
-    seo.canonicalUrl ||
-    website.url
-  );
+    console.warn(
+      'Add { label: "Client Experiences", href: "#client-experiences" } to SITE_CONFIG.navigation.'
+    );
 
-
-  /*
-  Open Graph
-  */
-
-  setAttribute(
-    "og-title",
-    "content",
-    seo.ogTitle
-  );
-
-  setAttribute(
-    "og-description",
-    "content",
-    seo.ogDescription
-  );
-
-  setAttribute(
-    "og-url",
-    "content",
-    website.url
-  );
-
-  setAttribute(
-    "og-image",
-    "content",
-    resolveAsset(seo.ogImage)
-  );
-
-  setAttribute(
-    "og-locale",
-    "content",
-    seo.locale
-  );
-
-
-  /*
-  Twitter
-  */
-
-  setAttribute(
-    "twitter-title",
-    "content",
-    seo.ogTitle
-  );
-
-  setAttribute(
-    "twitter-description",
-    "content",
-    seo.ogDescription
-  );
-
-  setAttribute(
-    "twitter-image",
-    "content",
-    resolveAsset(seo.ogImage)
-  );
-
-
-  /*
-  Favicon
-  */
-
-  setAttribute(
-    "site-favicon",
-    "href",
-    resolveAsset(
-      SITE_CONFIG.brand.logo.dark
-    )
-  );
-
-
-  /*
-  HTML language
-  */
-
-  document.documentElement.lang =
-    website.language ||
-    "en";
+  }
 
 }
 
 
-/* ==============================================================
-   BRAND
-============================================================== */
+/* ================================================================
+   05. HEADER
+================================================================ */
 
-function renderBrand() {
+function renderHeader() {
 
   const brand =
     SITE_CONFIG.brand;
 
-  const website =
-    SITE_CONFIG.website;
 
-
-  setAttribute(
-    "brand-link",
-    "aria-label",
-    `${brand.firmName} home`
-  );
-
+  /*
+  Logo
+  */
 
   setAttribute(
-    "brand-logo",
+    "header-logo",
     "src",
     resolveAsset(
       brand.logo.dark
@@ -494,163 +441,95 @@ function renderBrand() {
 
 
   setAttribute(
-    "brand-logo",
+    "header-logo",
     "alt",
     brand.logo.alt
   );
 
 
   /*
-  Loader initials
+  WhatsApp
   */
 
-  const initials =
-    brand.firmName
-      .replace("& Co.", "")
-      .trim()
-      .split(/\s+/)
-      .map(word => word[0])
-      .slice(0, 2)
-      .join("")
-      .toUpperCase();
+  const headerWhatsApp =
+    $("header-whatsapp");
 
+  if (headerWhatsApp) {
 
-  setText(
-    "loader-initials",
-    initials
-  );
+    headerWhatsApp.href =
+      getDefaultWhatsAppUrl();
 
-}
+    headerWhatsApp.target =
+      "_blank";
 
+    headerWhatsApp.rel =
+      "noopener";
 
-/* ==============================================================
-   NAVIGATION
-============================================================== */
-
-function renderNavigation() {
-
-  const navigation =
-    SITE_CONFIG.navigation;
-
-  const desktop =
-    $("desktop-navigation");
-
-  const mobile =
-    $("mobile-navigation");
-
-
-  if (!desktop || !mobile) {
-    return;
   }
 
 
-  desktop.innerHTML =
-    "";
-
-  mobile.innerHTML =
-    "";
-
-
-  navigation.forEach(item => {
-
-    const desktopLink =
-      document.createElement("a");
-
-    desktopLink.href =
-      item.href;
-
-    desktopLink.textContent =
-      item.label;
-
-    desktop.appendChild(
-      desktopLink
-    );
-
-
-    const mobileLink =
-      document.createElement("a");
-
-    mobileLink.href =
-      item.href;
-
-    mobileLink.textContent =
-      item.label;
-
-    mobile.appendChild(
-      mobileLink
-    );
-
-  });
-
-
   /*
-  Mobile WhatsApp
+  Theme button
   */
 
-  const whatsapp =
-    document.createElement("a");
+  const themeToggle =
+    $("theme-toggle");
 
-  whatsapp.href =
-    getDefaultWhatsAppUrl();
+  if (themeToggle) {
 
-  whatsapp.target =
-    "_blank";
+    themeToggle.setAttribute(
+      "type",
+      "button"
+    );
 
-  whatsapp.rel =
-    "noopener";
-
-  whatsapp.className =
-    "mobile-menu-whatsapp";
-
-  whatsapp.innerHTML = `
-    <i data-lucide="message-circle"></i>
-    ${escapeHTML(
-      SITE_CONFIG.social.whatsapp.label
-    )}
-  `;
-
-  mobile.appendChild(
-    whatsapp
-  );
+  }
 
 }
 
 
-/* ==============================================================
-   HERO
-============================================================== */
+/* ================================================================
+   06. HERO
+================================================================ */
 
 function renderHero() {
 
   const hero =
-    SITE_CONFIG.hero;
+    SITE_CONFIG.sections.hero;
 
   const brand =
     SITE_CONFIG.brand;
 
-  const coverage =
-    SITE_CONFIG.coverage;
+  const office =
+    SITE_CONFIG.office;
 
+
+  /*
+  Text
+  */
 
   setText(
     "hero-eyebrow",
     hero.eyebrow
   );
 
+
   setText(
     "hero-title",
     hero.title
   );
+
 
   setText(
     "hero-description",
     hero.description
   );
 
+
   setText(
-    "hero-supporting-text",
-    hero.supportingText
+    "hero-supporting",
+    hero.supporting
   );
+
 
   setText(
     "hero-brand-line",
@@ -659,227 +538,157 @@ function renderHero() {
 
 
   /*
-  Primary action
+  Buttons
   */
 
-  configureAction(
-    "hero-primary-action",
-    hero.primaryAction
+  setText(
+    "hero-call-label",
+    hero.callLabel
+  );
+
+
+  setText(
+    "hero-whatsapp-label",
+    hero.whatsappLabel
+  );
+
+
+  setText(
+    "hero-find-label",
+    hero.findLabel
+  );
+
+
+  setAttribute(
+    "hero-call",
+    "href",
+    getPhoneUrl()
+  );
+
+
+  setAttribute(
+    "hero-whatsapp",
+    "href",
+    getDefaultWhatsAppUrl()
+  );
+
+
+  setAttribute(
+    "hero-find",
+    "href",
+    getMapsUrl()
   );
 
 
   /*
-  Secondary action
+  External links
   */
 
-  configureAction(
-    "hero-secondary-action",
-    hero.secondaryAction
-  );
+  [
+    "hero-whatsapp",
+    "hero-find"
+  ]
+    .forEach(
+      id => {
+
+        const element =
+          $(id);
+
+        if (element) {
+
+          element.target =
+            "_blank";
+
+          element.rel =
+            "noopener";
+
+        }
+
+      }
+    );
 
 
   /*
-  Portrait
+  Hero image
   */
 
-  const portrait =
-    $("hero-portrait");
+  if (
+    hero.image &&
+    hero.image.enabled
+  ) {
 
-  const fallback =
-    $("hero-portrait-fallback");
+    const image =
+      $("hero-portrait-image");
 
+    if (image) {
 
-  if (portrait) {
+      image.src =
+        resolveAsset(
+          hero.image.src
+        );
 
-    portrait.src =
-      resolveAsset(
-        hero.visual.portraitImage
-      );
+      image.alt =
+        hero.image.alt || "";
 
-    portrait.alt =
-      hero.visual.portraitAlt;
+      image.hidden =
+        false;
+
+    }
 
   }
 
 
-  setText(
-    "hero-placeholder-title",
-    hero.visual.placeholderTitle
-  );
-
-  setText(
-    "hero-placeholder-text",
-    hero.visual.placeholderText
-  );
-
-
   /*
-  Established
+  Established / practice
   */
+
+  const heroLabels =
+    SITE_CONFIG.ui?.heroLabels || {};
+
 
   setText(
     "hero-established",
-    `Since ${brand.establishedYear}`
+    `${heroLabels.since || "Since"} ${
+      brand.establishedYear
+    }`
   );
+
 
   setText(
     "hero-established-label",
-    "CA Practice"
+    heroLabels.practice ||
+      "CA Practice"
   );
 
-
-  /*
-  Coverage
-  */
 
   setText(
     "hero-coverage-label",
-    "WORK WITH US"
+    heroLabels.coverageLabel ||
+      "WORK WITH US"
   );
+
 
   setText(
     "hero-coverage",
-    coverage.heroLine
+    office.coverage ||
+      ""
   );
 
-
-  /*
-  Hero portrait fallback
-
-  If the image exists, hide fallback.
-  If it fails, show fallback.
-  */
-
-  if (portrait) {
-
-    portrait.addEventListener(
-      "load",
-      () => {
-
-        portrait.hidden =
-          false;
-
-        if (fallback) {
-          fallback.hidden =
-            true;
-        }
-
-      }
-    );
-
-    portrait.addEventListener(
-      "error",
-      () => {
-
-        portrait.hidden =
-          true;
-
-        if (fallback) {
-          fallback.hidden =
-            false;
-        }
-
-      }
-    );
-
-  }
-
 }
 
 
-/* ==============================================================
-   ACTION CONFIGURATION
-============================================================== */
-
-function configureAction(
-  elementId,
-  action
-) {
-
-  const element =
-    $(elementId);
-
-  if (!element || !action) {
-    return;
-  }
-
-
-  element.textContent =
-    action.label;
-
-
-  element.href =
-    getActionUrl(
-      action.type
-    );
-
-
-  if (
-    action.type === "whatsapp" ||
-    action.type === "maps"
-  ) {
-
-    element.target =
-      "_blank";
-
-    element.rel =
-      "noopener";
-
-  }
-
-
-  /*
-  Add appropriate icon
-  */
-
-  let iconName =
-    "arrow-right";
-
-
-  if (action.type === "whatsapp") {
-    iconName =
-      "message-circle";
-  }
-
-  if (action.type === "phone") {
-    iconName =
-      "phone";
-  }
-
-  if (action.type === "maps") {
-    iconName =
-      "map-pin";
-  }
-
-
-  element.innerHTML = `
-    <i data-lucide="${iconName}"></i>
-    <span>${escapeHTML(action.label)}</span>
-  `;
-
-}
-
-
-/* ==============================================================
-   QUICK ALERT
-============================================================== */
+/* ================================================================
+   07. QUICK ALERT
+================================================================ */
 
 function renderQuickAlert() {
 
-  const config =
-    SITE_CONFIG.quickAlert;
-
-  const featureEnabled =
-    SITE_CONFIG.features.quickAlert;
-
-
   if (
-    !config.enabled ||
-    !featureEnabled
+    !SITE_CONFIG.features.quickAlert
   ) {
 
     setVisible(
-      "quick-alert",
+      "quick-alert-section",
       false
     );
 
@@ -888,60 +697,71 @@ function renderQuickAlert() {
   }
 
 
-  const container =
-    $("quick-alert-content");
+  const alert =
+    SITE_CONFIG.quickAlert;
 
-  if (!container) {
+
+  if (!alert) {
+
+    setVisible(
+      "quick-alert-section",
+      false
+    );
+
     return;
+
   }
 
 
-  container.innerHTML = `
+  setText(
+    "quick-alert-label",
+    alert.label
+  );
 
-    <div class="quick-alert-icon">
-      <i data-lucide="bell-ring"></i>
-    </div>
 
-    <div class="quick-alert-content-text">
+  setText(
+    "quick-alert-message",
+    alert.message
+  );
 
-      <span class="mini-label">
-        ${escapeHTML(config.defaultTitle)}
-      </span>
 
-      <strong>
-        ${escapeHTML(config.defaultMessage)}
-      </strong>
+  setText(
+    "quick-alert-action-label",
+    alert.actionLabel
+  );
 
-    </div>
 
-    <a
-      href="${escapeHTML(config.actionHref)}"
-      class="quick-alert-action"
-    >
+  const action =
+    $("quick-alert-action");
 
-      ${escapeHTML(config.actionLabel)}
+  if (action) {
 
-      <i data-lucide="arrow-right"></i>
+    action.href =
+      alert.actionUrl ||
+      getDefaultWhatsAppUrl();
 
-    </a>
+    if (
+      alert.external !== false
+    ) {
 
-  `;
+      action.target =
+        "_blank";
+
+      action.rel =
+        "noopener";
+
+    }
+
+  }
 
 }
 
 
-/* ==============================================================
-   SERVICES
-============================================================== */
+/* ================================================================
+   08. SERVICES
+================================================================ */
 
 function renderServices() {
-
-  const section =
-    SITE_CONFIG.sections.services;
-
-  const services =
-    SITE_CONFIG.services;
-
 
   if (
     !SITE_CONFIG.features.services
@@ -957,15 +777,24 @@ function renderServices() {
   }
 
 
+  const section =
+    SITE_CONFIG.sections.services;
+
+  const services =
+    SITE_CONFIG.services;
+
+
   setText(
     "services-eyebrow",
     section.eyebrow
   );
 
+
   setText(
     "services-title",
     section.title
   );
+
 
   setText(
     "services-description",
@@ -986,13 +815,26 @@ function renderServices() {
 
 
   services.forEach(
-    service => {
+    (
+      service,
+      index
+    ) => {
 
       const card =
-        document.createElement("article");
+        document.createElement(
+          "article"
+        );
 
       card.className =
         "service-card";
+
+
+      const details =
+        Array.isArray(
+          service.details
+        )
+          ? service.details
+          : [];
 
 
       card.innerHTML = `
@@ -1008,56 +850,83 @@ function renderServices() {
           </div>
 
           <span class="service-number">
-            ${escapeHTML(
-              String(
-                services.indexOf(service) + 1
-              ).padStart(2, "0")
+
+            ${String(
+              index + 1
+            ).padStart(
+              2,
+              "0"
             )}
+
           </span>
 
         </div>
 
 
         <h3>
-          ${escapeHTML(service.title)}
+          ${escapeHTML(
+            service.title
+          )}
         </h3>
 
 
         <p>
           ${escapeHTML(
-            service.shortDescription
+            service.description
           )}
         </p>
 
 
-        <ul class="service-details">
+        ${
+          details.length
+            ? `
+              <ul class="service-details">
 
-          ${service.details
-            .map(detail => `
-              <li>
-                <i data-lucide="check"></i>
-                <span>${escapeHTML(detail)}</span>
-              </li>
-            `)
-            .join("")}
+                ${details
+                  .map(
+                    detail => `
+                      <li>
 
-        </ul>
+                        <i data-lucide="check"></i>
+
+                        <span>
+                          ${escapeHTML(
+                            detail
+                          )}
+                        </span>
+
+                      </li>
+                    `
+                  )
+                  .join("")}
+
+              </ul>
+            `
+            : ""
+        }
 
 
-        <a
-          href="${escapeHTML(
-            getServiceWhatsAppUrl(service.id)
-          )}"
-          class="service-action"
-          target="_blank"
-          rel="noopener"
-        >
+        ${
+          service.actionLabel
+            ? `
+              <a
+                href="${escapeHTML(
+                  service.actionUrl ||
+                  "#contact"
+                )}"
+                class="service-action"
+              >
 
-          Ask us about this
+                ${escapeHTML(
+                  service.actionLabel
+                )}
 
-          <i data-lucide="arrow-up-right"></i>
+                <i data-lucide="arrow-up-right"></i>
 
-        </a>
+              </a>
+            `
+            : ""
+        }
 
       `;
 
@@ -1075,46 +944,72 @@ function renderServices() {
   */
 
   const notSure =
-    section.notSure;
+    SITE_CONFIG.notSure;
 
 
-  setText(
-    "services-not-sure-eyebrow",
-    notSure.eyebrow
-  );
+  if (notSure) {
 
-  setText(
-    "services-not-sure-title",
-    notSure.title
-  );
+    setText(
+      "not-sure-eyebrow",
+      notSure.eyebrow
+    );
 
-  setText(
-    "services-not-sure-description",
-    notSure.description
-  );
+    setText(
+      "not-sure-title",
+      notSure.title
+    );
 
-  setText(
-    "services-not-sure-action",
-    notSure.actionLabel
-  );
+    setText(
+      "not-sure-description",
+      notSure.description
+    );
 
-  setAttribute(
-    "services-not-sure-action",
-    "href",
-    notSure.actionHref
-  );
+    setText(
+      "not-sure-button-label",
+      notSure.buttonLabel
+    );
+
+
+    const button =
+      $("not-sure-button");
+
+    if (button) {
+
+      button.href =
+        notSure.buttonUrl ||
+        getDefaultWhatsAppUrl();
+
+      if (
+        !notSure.buttonUrl ||
+        notSure.external !== false
+      ) {
+
+        button.target =
+          "_blank";
+
+        button.rel =
+          "noopener";
+
+      }
+
+    }
+
+  }
+
+
+  refreshIcons();
 
 }
 
 
-/* ==============================================================
-   WHO WE HELP
-============================================================== */
+/* ================================================================
+   09. WHO WE HELP
+================================================================ */
 
-function renderAudiences() {
+function renderAudience() {
 
   if (
-    !SITE_CONFIG.features.whoWeHelp
+    !SITE_CONFIG.features.audience
   ) {
 
     setVisible(
@@ -1128,7 +1023,7 @@ function renderAudiences() {
 
 
   const section =
-    SITE_CONFIG.sections.whoWeHelp;
+    SITE_CONFIG.sections.audience;
 
   const audiences =
     SITE_CONFIG.audiences;
@@ -1139,10 +1034,12 @@ function renderAudiences() {
     section.eyebrow
   );
 
+
   setText(
     "audience-title",
     section.title
   );
+
 
   setText(
     "audience-description",
@@ -1166,7 +1063,9 @@ function renderAudiences() {
     audience => {
 
       const card =
-        document.createElement("article");
+        document.createElement(
+          "article"
+        );
 
       card.className =
         "audience-card";
@@ -1197,22 +1096,27 @@ function renderAudiences() {
         </p>
 
 
-        <a
-          href="${escapeHTML(
-            getAudienceWhatsAppUrl(
-              audience.id
-            )
-          )}"
-          target="_blank"
-          rel="noopener"
-          class="audience-action"
-        >
+        ${
+          audience.actionLabel
+            ? `
+              <a
+                href="${escapeHTML(
+                  audience.actionUrl ||
+                  "#contact"
+                )}"
+                class="audience-action"
+              >
 
-          Talk to us
+                ${escapeHTML(
+                  audience.actionLabel
+                )}
 
-          <i data-lucide="arrow-up-right"></i>
+                <i data-lucide="arrow-up-right"></i>
 
-        </a>
+              </a>
+            `
+            : ""
+        }
 
       `;
 
@@ -1224,21 +1128,84 @@ function renderAudiences() {
     }
   );
 
+
+  /*
+  Industries
+  */
+
+  const industries =
+    SITE_CONFIG.industries;
+
+
+  const industriesGrid =
+    $("industries-grid");
+
+
+  if (
+    industriesGrid &&
+    Array.isArray(
+      industries
+    )
+  ) {
+
+    industriesGrid.innerHTML =
+      "";
+
+
+    industries.forEach(
+      industry => {
+
+        const item =
+          document.createElement(
+            "div"
+          );
+
+        item.className =
+          "industry-item";
+
+
+        item.innerHTML = `
+
+          <i data-lucide="${escapeHTML(
+            industry.icon
+          )}"></i>
+
+          <span>
+            ${escapeHTML(
+              industry.label
+            )}
+          </span>
+
+        `;
+
+
+        industriesGrid.appendChild(
+          item
+        );
+
+      }
+    );
+
+  }
+
+
+  refreshIcons();
+
 }
 
 
-/* ==============================================================
-   INDUSTRIES
-============================================================== */
+/* ================================================================
+   10. CLIENT EXPERIENCES / REVIEWS
+================================================================ */
 
-function renderIndustries() {
+function renderReviews() {
 
   if (
-    !SITE_CONFIG.features.industries
+    !SITE_CONFIG.features.reviews
   ) {
 
     setVisible(
-      "industries",
+      "client-experiences",
       false
     );
 
@@ -1248,162 +1215,59 @@ function renderIndustries() {
 
 
   const section =
-    SITE_CONFIG.sections.industries;
+    SITE_CONFIG.sections.reviews;
 
-  const industries =
-    SITE_CONFIG.industries;
-
-
-  setText(
-    "industries-eyebrow",
-    section.eyebrow
-  );
-
-  setText(
-    "industries-title",
-    section.title
-  );
-
-  setText(
-    "industries-description",
-    section.description
-  );
-
-
-  const grid =
-    $("industries-grid");
-
-  if (!grid) {
-    return;
-  }
-
-
-  grid.innerHTML =
-    "";
-
-
-  industries.forEach(
-    industry => {
-
-      const item =
-        document.createElement("div");
-
-      item.className =
-        "industry-item";
-
-
-      item.innerHTML = `
-
-        <i data-lucide="${escapeHTML(
-          industry.icon
-        )}"></i>
-
-        <span>
-          ${escapeHTML(
-            industry.title
-          )}
-        </span>
-
-      `;
-
-
-      grid.appendChild(
-        item
-      );
-
-    }
-  );
-
-}
-
-
-/* ==============================================================
-   REVIEWS
-============================================================== */
-
-function renderReviews() {
-
-  const config =
+  const reviews =
     SITE_CONFIG.reviews;
-
-
-  if (
-    !SITE_CONFIG.features.reviews ||
-    !config.enabled
-  ) {
-
-    setVisible(
-      "reviews",
-      false
-    );
-
-    return;
-
-  }
 
 
   setText(
     "reviews-eyebrow",
-    config.eyebrow
+    section.eyebrow
   );
+
 
   setText(
     "reviews-title",
-    config.title
+    section.title
   );
+
 
   setText(
     "reviews-description",
-    config.description
+    section.description
   );
 
 
-  /*
-  Google Reviews
-  */
+  const action =
+    $("reviews-action");
 
-  const googleLink =
-    $("google-reviews-link");
+  if (action) {
+
+    action.textContent =
+      section.actionLabel ||
+      "";
 
 
-  if (
-    googleLink &&
-    config.googleReviewsUrl
-  ) {
+    action.href =
+      SITE_CONFIG.social?.googleReviews?.url ||
+      "#";
 
-    googleLink.href =
-      config.googleReviewsUrl;
 
-    googleLink.target =
-      "_blank";
+    if (
+      action.href !== "#"
+    ) {
 
-    googleLink.rel =
-      "noopener";
+      action.target =
+        "_blank";
 
-    googleLink.innerHTML = `
+      action.rel =
+        "noopener";
 
-      <i data-lucide="star"></i>
-
-      ${escapeHTML(
-        config.googleActionLabel
-      )}
-
-      <i data-lucide="arrow-up-right"></i>
-
-    `;
-
-  }
-  else if (googleLink) {
-
-    googleLink.hidden =
-      true;
+    }
 
   }
 
-
-  /*
-  Testimonials
-  */
 
   const grid =
     $("testimonials-grid");
@@ -1417,16 +1281,15 @@ function renderReviews() {
   }
 
 
-  const testimonials =
-    config.testimonials || [];
-
-
   grid.innerHTML =
     "";
 
 
   if (
-    testimonials.length === 0
+    !Array.isArray(
+      reviews
+    ) ||
+    reviews.length === 0
   ) {
 
     if (empty) {
@@ -1434,12 +1297,17 @@ function renderReviews() {
       empty.hidden =
         false;
 
+
       const paragraph =
-        empty.querySelector("p");
+        empty.querySelector(
+          "p"
+        );
+
 
       if (paragraph) {
 
         paragraph.textContent =
+          SITE_CONFIG.reviews.emptyMessage ||
           "We're collecting genuine client experiences. Check back soon.";
 
       }
@@ -1452,38 +1320,76 @@ function renderReviews() {
 
 
   if (empty) {
+
     empty.hidden =
       true;
+
   }
 
 
-  testimonials.forEach(
-    testimonial => {
+  reviews.forEach(
+    review => {
 
       const card =
-        document.createElement("article");
+        document.createElement(
+          "article"
+        );
 
       card.className =
         "testimonial-card";
 
 
+      const rating =
+        Math.max(
+          0,
+          Math.min(
+            5,
+            Number(
+              review.rating ||
+              5
+            )
+          )
+        );
+
+
       card.innerHTML = `
 
-        <div class="testimonial-stars">
+        <div
+          class="testimonial-stars"
+          aria-label="${rating} out of 5 stars"
+        >
 
-          ${[1, 2, 3, 4, 5]
-            .map(() =>
-              `<i data-lucide="star"></i>`
-            )
-            .join("")}
+          ${Array.from(
+            {
+              length: 5
+            },
+            (
+              _,
+              index
+            ) =>
+              `
+                <i
+                  data-lucide="star"
+                  class="${
+                    index < rating
+                      ? "filled"
+                      : ""
+                  }"
+                ></i>
+              `
+          ).join("")}
 
         </div>
 
 
         <blockquote>
+
           “${escapeHTML(
-            testimonial.quote
+            review.text ||
+            review.quote ||
+            ""
           )}”
+
         </blockquote>
 
 
@@ -1491,21 +1397,36 @@ function renderReviews() {
 
           <strong>
             ${escapeHTML(
-              testimonial.name
+              review.name ||
+              ""
             )}
           </strong>
 
-          <span>
-            ${escapeHTML(
-              testimonial.role || ""
-            )}
-          </span>
 
-          <small>
-            ${escapeHTML(
-              testimonial.location || ""
-            )}
-          </small>
+          ${
+            review.role
+              ? `
+                <span>
+                  ${escapeHTML(
+                    review.role
+                  )}
+                </span>
+              `
+              : ""
+          }
+
+
+          ${
+            review.location
+              ? `
+                <small>
+                  ${escapeHTML(
+                    review.location
+                  )}
+                </small>
+              `
+              : ""
+          }
 
         </div>
 
@@ -1519,17 +1440,20 @@ function renderReviews() {
     }
   );
 
+
+  refreshIcons();
+
 }
 
 
-/* ==============================================================
-   PROFESSIONAL STORY
-============================================================== */
+/* ================================================================
+   11. STORY
+================================================================ */
 
-function renderProfessionalStory() {
+function renderStory() {
 
   if (
-    !SITE_CONFIG.features.professionalStory
+    !SITE_CONFIG.features.story
   ) {
 
     setVisible(
@@ -1542,28 +1466,34 @@ function renderProfessionalStory() {
   }
 
 
+  const section =
+    SITE_CONFIG.sections.story;
+
   const story =
-    SITE_CONFIG.professionalStory;
+    SITE_CONFIG.story;
 
 
   setText(
     "story-eyebrow",
-    story.eyebrow
+    section.eyebrow
   );
+
 
   setText(
     "story-title",
-    story.title
+    section.title
   );
+
 
   setText(
     "story-description",
-    story.description
+    section.description
   );
 
 
   const timeline =
     $("career-timeline");
+
 
   if (!timeline) {
     return;
@@ -1574,23 +1504,31 @@ function renderProfessionalStory() {
     "";
 
 
-  story.career.forEach(
-    (item, index) => {
+  story.timeline.forEach(
+    (
+      item,
+      index
+    ) => {
 
-      const element =
-        document.createElement("article");
+      const article =
+        document.createElement(
+          "article"
+        );
 
-      element.className =
+      article.className =
         "career-item";
 
 
-      element.innerHTML = `
+      article.innerHTML = `
 
         <div class="career-number">
 
           ${String(
             index + 1
-          ).padStart(2, "0")}
+          ).padStart(
+            2,
+            "0"
+          )}
 
         </div>
 
@@ -1606,30 +1544,30 @@ function renderProfessionalStory() {
 
         <div class="career-content">
 
-          <span class="career-organisation">
-
-            ${escapeHTML(
-              item.organisation
-            )}
-
-          </span>
+          ${
+            item.organisation
+              ? `
+                <span class="career-organisation">
+                  ${escapeHTML(
+                    item.organisation
+                  )}
+                </span>
+              `
+              : ""
+          }
 
 
           <h3>
-
             ${escapeHTML(
-              item.role
+              item.title
             )}
-
           </h3>
 
 
           <p>
-
             ${escapeHTML(
               item.description
             )}
-
           </p>
 
         </div>
@@ -1638,7 +1576,7 @@ function renderProfessionalStory() {
 
 
       timeline.appendChild(
-        element
+        article
       );
 
     }
@@ -1650,40 +1588,54 @@ function renderProfessionalStory() {
   */
 
   const countries =
+    story.countries || [];
+
+
+  const countriesContainer =
     $("countries");
 
 
-  if (!countries) {
-    return;
+  if (countriesContainer) {
+
+    countriesContainer.innerHTML =
+      "";
+
+
+    countries.forEach(
+      country => {
+
+        const span =
+          document.createElement(
+            "span"
+          );
+
+        span.textContent =
+          country;
+
+        countriesContainer.appendChild(
+          span
+        );
+
+      }
+    );
+
   }
 
 
-  countries.innerHTML =
-    "";
-
-
-  story.countries.forEach(
-    country => {
-
-      const element =
-        document.createElement("span");
-
-      element.textContent =
-        country;
-
-      countries.appendChild(
-        element
-      );
-
-    }
+  setText(
+    "countries-label",
+    story.countriesLabel
   );
+
+
+  refreshIcons();
 
 }
 
 
-/* ==============================================================
-   DIGITAL OFFICE
-============================================================== */
+/* ================================================================
+   12. DIGITAL OFFICE
+================================================================ */
 
 function renderDigitalOffice() {
 
@@ -1702,6 +1654,9 @@ function renderDigitalOffice() {
 
 
   const section =
+    SITE_CONFIG.sections.digitalOffice;
+
+  const digital =
     SITE_CONFIG.digitalOffice;
 
 
@@ -1710,87 +1665,96 @@ function renderDigitalOffice() {
     section.eyebrow
   );
 
+
   setText(
     "digital-office-title",
     section.title
   );
+
 
   setText(
     "digital-office-description",
     section.description
   );
 
-  setText(
-    "digital-office-closing",
-    section.closingLine
-  );
 
-
-  const grid =
+  const benefits =
     $("digital-benefits");
 
-  if (!grid) {
-    return;
+
+  if (benefits) {
+
+    benefits.innerHTML =
+      "";
+
+
+    digital.benefits.forEach(
+      benefit => {
+
+        const item =
+          document.createElement(
+            "div"
+          );
+
+        item.className =
+          "digital-benefit";
+
+
+        item.innerHTML = `
+
+          <div class="digital-benefit-icon">
+
+            <i data-lucide="${escapeHTML(
+              benefit.icon
+            )}"></i>
+
+          </div>
+
+
+          <div>
+
+            <h3>
+              ${escapeHTML(
+                benefit.title
+              )}
+            </h3>
+
+
+            <p>
+              ${escapeHTML(
+                benefit.description
+              )}
+            </p>
+
+          </div>
+
+        `;
+
+
+        benefits.appendChild(
+          item
+        );
+
+      }
+    );
+
   }
 
 
-  grid.innerHTML =
-    "";
-
-
-  section.benefits.forEach(
-    benefit => {
-
-      const item =
-        document.createElement("article");
-
-      item.className =
-        "digital-benefit";
-
-
-      item.innerHTML = `
-
-        <div class="digital-benefit-icon">
-
-          <i data-lucide="${escapeHTML(
-            benefit.icon
-          )}"></i>
-
-        </div>
-
-
-        <div>
-
-          <h3>
-            ${escapeHTML(
-              benefit.title
-            )}
-          </h3>
-
-          <p>
-            ${escapeHTML(
-              benefit.description
-            )}
-          </p>
-
-        </div>
-
-      `;
-
-
-      grid.appendChild(
-        item
-      );
-
-    }
+  setText(
+    "digital-closing-line",
+    digital.closingLine
   );
+
+
+  refreshIcons();
 
 }
 
 
-/* ==============================================================
-   START HERE
-============================================================== */
+/* ================================================================
+   13. START HERE
+================================================================ */
 
 function renderStartHere() {
 
@@ -1809,42 +1773,27 @@ function renderStartHere() {
 
 
   const section =
+    SITE_CONFIG.sections.startHere;
+
+  const start =
     SITE_CONFIG.startHere;
 
 
   setText(
-    "start-eyebrow",
+    "start-here-eyebrow",
     section.eyebrow
   );
 
+
   setText(
-    "start-title",
+    "start-here-title",
     section.title
   );
 
+
   setText(
-    "start-description",
+    "start-here-description",
     section.description
-  );
-
-  setText(
-    "mind-eyebrow",
-    section.mindEyebrow
-  );
-
-  setText(
-    "mind-title",
-    section.mindTitle
-  );
-
-  setText(
-    "mind-description",
-    section.mindDescription
-  );
-
-  setText(
-    "start-reassurance",
-    section.reassurance
   );
 
 
@@ -1855,271 +1804,244 @@ function renderStartHere() {
   const steps =
     $("start-steps");
 
-  if (!steps) {
-    return;
-  }
+
+  if (steps) {
+
+    steps.innerHTML =
+      "";
 
 
-  steps.innerHTML =
-    "";
+    start.steps.forEach(
+      (
+        step,
+        index
+      ) => {
 
-
-  section.steps.forEach(
-    step => {
-
-      const element =
-        document.createElement("article");
-
-      element.className =
-        "start-step";
-
-
-      element.innerHTML = `
-
-        <span class="start-step-number">
-
-          ${escapeHTML(
-            step.number
-          )}
-
-        </span>
-
-
-        <h3>
-
-          ${escapeHTML(
-            step.title
-          )}
-
-        </h3>
-
-
-        <p>
-
-          ${escapeHTML(
-            step.description
-          )}
-
-        </p>
-
-      `;
-
-
-      steps.appendChild(
-        element
-      );
-
-    }
-  );
-
-
-  renderWhatsAppOptions();
-
-}
-
-
-/* ==============================================================
-   WHATSAPP OPTIONS
-============================================================== */
-
-function renderWhatsAppOptions() {
-
-  if (
-    !SITE_CONFIG.features.whatsappOptions
-  ) {
-
-    setVisible(
-      "whatsapp-options",
-      false
-    );
-
-    return;
-
-  }
-
-
-  const options =
-    SITE_CONFIG.whatsappOptions;
-
-  const container =
-    $("whatsapp-options");
-
-  if (!container) {
-    return;
-  }
-
-
-  container.innerHTML =
-    "";
-
-
-  options.forEach(
-    option => {
-
-      const button =
-        document.createElement("button");
-
-      button.type =
-        "button";
-
-      button.className =
-        "whatsapp-option";
-
-      button.dataset.optionId =
-        option.id;
-
-
-      button.innerHTML = `
-
-        <i data-lucide="${escapeHTML(
-          option.icon
-        )}"></i>
-
-        <span>
-
-          ${escapeHTML(
-            option.label
-          )}
-
-        </span>
-
-      `;
-
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          selectWhatsAppOption(
-            option.id
+        const article =
+          document.createElement(
+            "article"
           );
 
-        }
-      );
+        article.className =
+          "start-step";
 
 
-      container.appendChild(
-        button
-      );
+        article.innerHTML = `
 
-    }
-  );
+          <span class="start-step-number">
 
-}
+            ${
+              step.number ||
+              String(
+                index + 1
+              ).padStart(
+                2,
+                "0"
+              )
+            }
 
-
-/* ==============================================================
-   WHATSAPP OPTION SELECTION
-============================================================== */
-
-function initializeWhatsAppSelection() {
-
-  /*
-  Selection listeners are attached during rendering.
-  This function intentionally remains as the initialization
-  point for future extensions.
-  */
-
-}
+          </span>
 
 
-function selectWhatsAppOption(optionId) {
-
-  const option =
-    SITE_CONFIG.whatsappOptions.find(
-      item => item.id === optionId
-    );
-
-
-  if (!option) {
-    return;
-  }
+          <h3>
+            ${escapeHTML(
+              step.title
+            )}
+          </h3>
 
 
-  APP.selectedWhatsAppOption =
-    optionId;
+          <p>
+            ${escapeHTML(
+              step.description
+            )}
+          </p>
+
+        `;
 
 
-  /*
-  Update selected styling
-  */
-
-  document
-    .querySelectorAll(
-      ".whatsapp-option"
-    )
-    .forEach(
-      button => {
-
-        button.classList.toggle(
-          "selected",
-          button.dataset.optionId === optionId
+        steps.appendChild(
+          article
         );
 
       }
     );
 
-
-  /*
-  Show result
-  */
-
-  const result =
-    $("whatsapp-option-result");
-
-  const link =
-    $("selected-whatsapp-link");
-
-
-  if (!result || !link) {
-    return;
   }
 
 
-  link.href =
-    getQuickWhatsAppUrl(
-      optionId
+  /*
+  WhatsApp options
+  */
+
+  const options =
+    $("whatsapp-options");
+
+
+  if (options) {
+
+    options.innerHTML =
+      "";
+
+
+    start.whatsappOptions.forEach(
+      option => {
+
+        const button =
+          document.createElement(
+            "button"
+          );
+
+        button.type =
+          "button";
+
+        button.className =
+          "whatsapp-option";
+
+
+        button.innerHTML = `
+
+          <i data-lucide="${escapeHTML(
+            option.icon
+          )}"></i>
+
+          <span>
+            ${escapeHTML(
+              option.label
+            )}
+          </span>
+
+        `;
+
+
+        button.addEventListener(
+          "click",
+          () => {
+
+            options
+              .querySelectorAll(
+                ".whatsapp-option"
+              )
+              .forEach(
+                item =>
+                  item.classList.remove(
+                    "selected"
+                  )
+              );
+
+
+            button.classList.add(
+              "selected"
+            );
+
+
+            const result =
+              $("whatsapp-option-result");
+
+
+            const resultText =
+              $("whatsapp-option-result-text");
+
+
+            if (result) {
+
+              result.hidden =
+                false;
+
+            }
+
+
+            if (resultText) {
+
+              resultText.textContent =
+                option.result ||
+                option.label;
+
+            }
+
+
+            const resultButton =
+              $("whatsapp-option-button");
+
+
+            if (resultButton) {
+
+              const number =
+                SITE_CONFIG.contact.whatsapp.value;
+
+
+              const message =
+                option.message ||
+                SITE_CONFIG.contact.whatsapp.defaultMessage ||
+                "";
+
+
+              resultButton.href =
+                `https://wa.me/${number}?text=${encodeURIComponent(
+                  message
+                )}`;
+
+
+              resultButton.target =
+                "_blank";
+
+              resultButton.rel =
+                "noopener";
+
+            }
+
+          }
+        );
+
+
+        options.appendChild(
+          button
+        );
+
+      }
     );
 
-
-  result.hidden =
-    false;
+  }
 
 
-  result.scrollIntoView({
-    behavior:
-      "smooth",
+  setText(
+    "start-reassurance",
+    start.reassurance
+  );
 
-    block:
-      "nearest"
-  });
+
+  refreshIcons();
 
 }
 
 
-/* ==============================================================
-   UPDATES
-============================================================== */
+/* ================================================================
+   14. UPDATES
+================================================================ */
 
-function renderUpdates(updates = []) {
+function renderUpdates(
+  updates = []
+) {
 
-  if (
-    !SITE_CONFIG.features.updates ||
-    !SITE_CONFIG.updates.enabled
-  ) {
-
-    setVisible(
-      "updates",
-      false
-    );
-
-    return;
-
-  }
+  const section =
+    SITE_CONFIG.sections.updates;
 
 
-  const config =
-    SITE_CONFIG.updates;
+  setText(
+    "updates-eyebrow",
+    section.eyebrow
+  );
+
+
+  setText(
+    "updates-title",
+    section.title
+  );
+
+
+  setText(
+    "updates-description",
+    section.description
+  );
 
 
   const grid =
@@ -2139,27 +2061,16 @@ function renderUpdates(updates = []) {
 
 
   if (
-    !updates ||
+    !Array.isArray(
+      updates
+    ) ||
     updates.length === 0
   ) {
-
-    grid.hidden =
-      true;
 
     if (empty) {
 
       empty.hidden =
         false;
-
-      setText(
-        "updates-empty-title",
-        config.emptyTitle
-      );
-
-      setText(
-        "updates-empty-description",
-        config.emptyDescription
-      );
 
     }
 
@@ -2168,119 +2079,121 @@ function renderUpdates(updates = []) {
   }
 
 
-  grid.hidden =
-    false;
-
-
   if (empty) {
+
     empty.hidden =
       true;
+
   }
 
 
-  updates
-    .slice(
-      0,
-      config.maxFeatured
-    )
-    .forEach(
-      update => {
+  updates.forEach(
+    update => {
 
-        const card =
-          document.createElement("article");
+      const card =
+        document.createElement(
+          "article"
+        );
 
-        card.className =
-          "update-card";
+      card.className =
+        "update-card";
 
 
-        const date =
-          update.date
-            ? formatUpdateDate(
-                update.date
-              )
-            : "";
+      const date =
+        update.date
+          ? formatUpdateDate(
+              update.date
+            )
+          : "";
 
 
-        card.innerHTML = `
+      card.innerHTML = `
 
-          <div class="update-card-top">
+        <div class="update-card-top">
 
-            <span class="update-type">
-
-              ${escapeHTML(
-                update.type ||
-                "General"
-              )}
-
-            </span>
-
-
-            ${
-              date
-                ? `
-                  <time datetime="${escapeHTML(
-                    update.date
-                  )}">
-                    ${escapeHTML(date)}
-                  </time>
-                `
-                : ""
-            }
-
-          </div>
-
-
-          <h3>
+          <span class="update-type">
 
             ${escapeHTML(
-              update.title ||
-              ""
+              update.type ||
+              "General"
             )}
 
-          </h3>
-
-
-          <p>
-
-            ${escapeHTML(
-              update.description ||
-              ""
-            )}
-
-          </p>
+          </span>
 
 
           ${
-            update.link
+            date
               ? `
-                <a
-                  href="${escapeHTML(update.link)}"
-                  target="_blank"
-                  rel="noopener"
-                  class="text-link"
-                >
-
+                <time datetime="${escapeHTML(
+                  update.date
+                )}">
                   ${escapeHTML(
-                    update.linkLabel ||
-                    "Read more"
+                    date
                   )}
-
-                  <i data-lucide="arrow-up-right"></i>
-
-                </a>
+                </time>
               `
               : ""
           }
 
-        `;
+        </div>
 
 
-        grid.appendChild(
-          card
-        );
+        <h3>
 
-      }
-    );
+          ${escapeHTML(
+            update.title ||
+            ""
+          )}
+
+        </h3>
+
+
+        <p>
+
+          ${escapeHTML(
+            update.description ||
+            ""
+          )}
+
+        </p>
+
+
+        ${
+          update.link
+            ? `
+              <a
+                href="${escapeHTML(
+                  update.link
+                )}"
+                target="_blank"
+                rel="noopener"
+                class="text-link"
+              >
+
+                ${escapeHTML(
+                  update.linkLabel ||
+                  "Read more"
+                )}
+
+                <i data-lucide="arrow-up-right"></i>
+
+              </a>
+            `
+            : ""
+        }
+
+      `;
+
+
+      grid.appendChild(
+        card
+      );
+
+    }
+  );
+
+
+  refreshIcons();
 
 }
 
@@ -2288,7 +2201,7 @@ function renderUpdates(updates = []) {
 function initializeUpdates() {
 
   /*
-  The website starts with the configured fallback state.
+  Website starts with configured fallback state.
 
   Google Sheet integration can be connected later without
   changing the HTML architecture.
@@ -2298,6 +2211,7 @@ function initializeUpdates() {
 
 
   if (
+    SITE_CONFIG.updates &&
     SITE_CONFIG.updates.sheetUrl
   ) {
 
@@ -2311,19 +2225,11 @@ function initializeUpdates() {
 async function fetchUpdatesFromSheet() {
 
   /*
-  The actual Google Sheet publishing/fetching method will be
+  Actual Google Sheet publishing/fetching method can be
   connected once the Sheet structure is finalized.
-
-  Keeping this function isolated means we can change the data
-  source without changing the rest of the website.
   */
 
   try {
-
-    /*
-    Placeholder intentionally left without making assumptions
-    about the future Google Sheet API format.
-    */
 
     console.info(
       "Google Sheet updates are configured but the data endpoint has not been connected yet."
@@ -2342,10 +2248,15 @@ async function fetchUpdatesFromSheet() {
 }
 
 
-function formatUpdateDate(dateValue) {
+function formatUpdateDate(
+  dateValue
+) {
 
   const date =
-    new Date(dateValue);
+    new Date(
+      dateValue
+    );
+
 
   if (
     Number.isNaN(
@@ -2375,9 +2286,9 @@ function formatUpdateDate(dateValue) {
 }
 
 
-/* ==============================================================
-   CONTACT METHODS
-============================================================== */
+/* ================================================================
+   15. CONTACT METHODS
+================================================================ */
 
 function renderContactMethods() {
 
@@ -2407,10 +2318,12 @@ function renderContactMethods() {
     section.eyebrow
   );
 
+
   setText(
     "contact-methods-title",
     section.title
   );
+
 
   setText(
     "contact-methods-description",
@@ -2420,6 +2333,7 @@ function renderContactMethods() {
 
   const grid =
     $("contact-methods-grid");
+
 
   if (!grid) {
     return;
@@ -2434,7 +2348,9 @@ function renderContactMethods() {
     method => {
 
       const card =
-        document.createElement("article");
+        document.createElement(
+          "article"
+        );
 
       card.className =
         "contact-method-card";
@@ -2476,8 +2392,11 @@ function renderContactMethods() {
 
 
         <a
-          href="${escapeHTML(url)}"
+          href="${escapeHTML(
+            url
+          )}"
           class="text-link"
+
           ${
             method.actionType === "maps" ||
             method.actionType === "whatsapp"
@@ -2507,12 +2426,15 @@ function renderContactMethods() {
     }
   );
 
+
+  refreshIcons();
+
 }
 
 
-/* ==============================================================
-   APPOINTMENT
-============================================================== */
+/* ================================================================
+   16. APPOINTMENT
+================================================================ */
 
 function renderAppointment() {
 
@@ -2543,10 +2465,12 @@ function renderAppointment() {
     section.eyebrow
   );
 
+
   setText(
     "appointment-title",
     section.title
   );
+
 
   setText(
     "appointment-description",
@@ -2557,13 +2481,21 @@ function renderAppointment() {
   const button =
     $("appointment-button");
 
+
   if (!button) {
     return;
   }
 
 
-  button.textContent =
-    appointment.label;
+  button.innerHTML = `
+
+    ${escapeHTML(
+      appointment.label
+    )}
+
+    <i data-lucide="arrow-right"></i>
+
+  `;
 
 
   button.href =
@@ -2577,22 +2509,14 @@ function renderAppointment() {
     "noopener";
 
 
-  button.innerHTML = `
-
-    ${escapeHTML(
-      appointment.label
-    )}
-
-    <i data-lucide="arrow-right"></i>
-
-  `;
+  refreshIcons();
 
 }
 
 
-/* ==============================================================
-   FAQ
-============================================================== */
+/* ================================================================
+   17. FAQ
+================================================================ */
 
 function renderFAQ() {
 
@@ -2622,10 +2546,12 @@ function renderFAQ() {
     section.eyebrow
   );
 
+
   setText(
     "faq-title",
     section.title
   );
+
 
   setText(
     "faq-description",
@@ -2635,6 +2561,7 @@ function renderFAQ() {
 
   const action =
     $("faq-action");
+
 
   if (action) {
 
@@ -2650,6 +2577,7 @@ function renderFAQ() {
   const list =
     $("faq-list");
 
+
   if (!list) {
     return;
   }
@@ -2660,10 +2588,15 @@ function renderFAQ() {
 
 
   faq.forEach(
-    (item, index) => {
+    (
+      item,
+      index
+    ) => {
 
       const wrapper =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
       wrapper.className =
         "faq-item";
@@ -2679,10 +2612,13 @@ function renderFAQ() {
         >
 
           <span>
+
             ${escapeHTML(
               item.question
             )}
+
           </span>
+
 
           <i data-lucide="plus"></i>
 
@@ -2696,9 +2632,11 @@ function renderFAQ() {
         >
 
           <p>
+
             ${escapeHTML(
               item.answer
             )}
+
           </p>
 
         </div>
@@ -2710,6 +2648,7 @@ function renderFAQ() {
         wrapper.querySelector(
           ".faq-question"
         );
+
 
       const answer =
         wrapper.querySelector(
@@ -2729,7 +2668,9 @@ function renderFAQ() {
 
           button.setAttribute(
             "aria-expanded",
-            String(!expanded)
+            String(
+              !expanded
+            )
           );
 
 
@@ -2756,12 +2697,15 @@ function renderFAQ() {
     }
   );
 
+
+  refreshIcons();
+
 }
 
 
-/* ==============================================================
-   CONTACT
-============================================================== */
+/* ================================================================
+   18. CONTACT
+================================================================ */
 
 function renderContact() {
 
@@ -2783,15 +2727,18 @@ function renderContact() {
     section.eyebrow
   );
 
+
   setText(
     "contact-title",
     section.title
   );
 
+
   setText(
     "contact-description",
     section.description
   );
+
 
   setText(
     "contact-reassurance",
@@ -2809,11 +2756,13 @@ function renderContact() {
     getPhoneUrl()
   );
 
+
   setAttribute(
     "contact-whatsapp",
     "href",
     getDefaultWhatsAppUrl()
   );
+
 
   setAttribute(
     "contact-email",
@@ -2821,11 +2770,13 @@ function renderContact() {
     getEmailUrl()
   );
 
+
   setAttribute(
     "contact-maps",
     "href",
     getMapsUrl()
   );
+
 
   setAttribute(
     "address-directions",
@@ -2839,15 +2790,18 @@ function renderContact() {
     contact.phone.display
   );
 
+
   setText(
     "contact-whatsapp-display",
     contact.whatsapp.display
   );
 
+
   setText(
     "contact-email-display",
     contact.email.display
   );
+
 
   setText(
     "contact-office-name",
@@ -2872,12 +2826,27 @@ function renderContact() {
   setHTML(
     "contact-address",
     `
-      ${escapeHTML(address.line1)}<br>
-      ${escapeHTML(address.line2)}<br>
-      ${escapeHTML(address.city)}
-      – ${escapeHTML(address.pincode)}<br>
-      ${escapeHTML(address.state)},
-      ${escapeHTML(address.country)}
+      ${escapeHTML(
+        address.line1
+      )}<br>
+
+      ${escapeHTML(
+        address.line2
+      )}<br>
+
+      ${escapeHTML(
+        address.city
+      )}
+      – ${escapeHTML(
+        address.pincode
+      )}<br>
+
+      ${escapeHTML(
+        address.state
+      )},
+      ${escapeHTML(
+        address.country
+      )}
     `
   );
 
@@ -2885,10 +2854,14 @@ function renderContact() {
   const landmark =
     $("contact-landmark");
 
+
   if (landmark) {
 
     const span =
-      landmark.querySelector("span");
+      landmark.querySelector(
+        "span"
+      );
+
 
     if (span) {
 
@@ -2905,6 +2878,7 @@ function renderContact() {
     section.findUsLabel
   );
 
+
   setText(
     "hours-label",
     section.hoursLabel
@@ -2916,10 +2890,12 @@ function renderContact() {
     office.hours.display
   );
 
+
   setText(
     "office-closed-note",
     office.hours.closedNote
   );
+
 
   setText(
     "office-visit-policy",
@@ -2942,29 +2918,32 @@ function renderContact() {
     "contact-maps",
     "address-directions"
   ]
-    .forEach(id => {
+    .forEach(
+      id => {
 
-      const element =
-        $(id);
+        const element =
+          $(id);
 
-      if (element) {
 
-        element.target =
-          "_blank";
+        if (element) {
 
-        element.rel =
-          "noopener";
+          element.target =
+            "_blank";
+
+          element.rel =
+            "noopener";
+
+        }
 
       }
-
-    });
+    );
 
 }
 
 
-/* ==============================================================
-   FOOTER
-============================================================== */
+/* ================================================================
+   19. FOOTER
+================================================================ */
 
 function renderFooter() {
 
@@ -2990,6 +2969,7 @@ function renderFooter() {
     )
   );
 
+
   setAttribute(
     "footer-logo",
     "alt",
@@ -3006,10 +2986,12 @@ function renderFooter() {
     footer.tagline
   );
 
+
   setText(
     "footer-copyright",
     footer.copyright
   );
+
 
   setText(
     "footer-location",
@@ -3021,19 +3003,28 @@ function renderFooter() {
   Footer labels
   */
 
+  const uiLabels =
+    SITE_CONFIG.ui?.labels || {};
+
+
   setText(
     "footer-explore-label",
-    "Explore"
+    uiLabels.footerExplore ||
+      "Explore"
   );
+
 
   setText(
     "footer-social-title",
-    "Find us online"
+    uiLabels.footerSocial ||
+      "Find us online"
   );
+
 
   setText(
     "footer-contact-title",
-    "Talk to us"
+    uiLabels.footerContact ||
+      "Talk to us"
   );
 
 
@@ -3043,6 +3034,7 @@ function renderFooter() {
 
   const navigation =
     $("footer-navigation-links");
+
 
   if (navigation) {
 
@@ -3054,13 +3046,20 @@ function renderFooter() {
       item => {
 
         const link =
-          document.createElement("a");
+          document.createElement(
+            "a"
+          );
+
 
         link.href =
-          item.href;
+          item.href === "#reviews"
+            ? "#client-experiences"
+            : item.href;
+
 
         link.textContent =
           item.label;
+
 
         navigation.appendChild(
           link
@@ -3079,6 +3078,7 @@ function renderFooter() {
   const phone =
     $("footer-phone");
 
+
   if (phone) {
 
     phone.href =
@@ -3093,6 +3093,7 @@ function renderFooter() {
   const email =
     $("footer-email");
 
+
   if (email) {
 
     email.href =
@@ -3106,6 +3107,7 @@ function renderFooter() {
 
   const whatsapp =
     $("footer-whatsapp");
+
 
   if (whatsapp) {
 
@@ -3147,6 +3149,7 @@ function renderFooter() {
     privacy.label
   );
 
+
   setText(
     "footer-disclaimer-link",
     disclaimer.label
@@ -3158,6 +3161,7 @@ function renderFooter() {
     privacy.enabled
   );
 
+
   setVisible(
     "footer-disclaimer-link",
     disclaimer.enabled
@@ -3166,14 +3170,15 @@ function renderFooter() {
 }
 
 
-/* ==============================================================
-   SOCIAL LINKS
-============================================================== */
+/* ================================================================
+   20. SOCIAL LINKS
+================================================================ */
 
 function renderSocialLinks() {
 
   const container =
     $("footer-social-links");
+
 
   if (!container) {
     return;
@@ -3201,7 +3206,9 @@ function renderSocialLinks() {
     SITE_CONFIG.social
   )
     .forEach(
-      ([key, item]) => {
+      (
+        [key, item]
+      ) => {
 
         if (
           !item.enabled ||
@@ -3212,24 +3219,32 @@ function renderSocialLinks() {
 
 
         const link =
-          document.createElement("a");
+          document.createElement(
+            "a"
+          );
+
 
         link.href =
           item.url;
 
+
         link.className =
           "social-link";
+
 
         link.target =
           "_blank";
 
+
         link.rel =
           "noopener";
+
 
         link.setAttribute(
           "aria-label",
           item.label
         );
+
 
         link.title =
           item.label;
@@ -3242,9 +3257,11 @@ function renderSocialLinks() {
           )}"></i>
 
           <span>
+
             ${escapeHTML(
               item.shortLabel
             )}
+
           </span>
 
         `;
@@ -3257,12 +3274,15 @@ function renderSocialLinks() {
       }
     );
 
+
+  refreshIcons();
+
 }
 
 
-/* ==============================================================
-   LEGAL
-============================================================== */
+/* ================================================================
+   21. LEGAL
+================================================================ */
 
 function renderLegal() {
 
@@ -3277,12 +3297,15 @@ function renderLegal() {
   Privacy
   */
 
-  if (privacy.enabled) {
+  if (
+    privacy.enabled
+  ) {
 
     setText(
       "privacy-eyebrow",
       privacy.label
     );
+
 
     setText(
       "privacy-title",
@@ -3292,6 +3315,7 @@ function renderLegal() {
 
     const privacyContent =
       $("privacy-content");
+
 
     if (privacyContent) {
 
@@ -3314,12 +3338,15 @@ function renderLegal() {
   Disclaimer
   */
 
-  if (disclaimer.enabled) {
+  if (
+    disclaimer.enabled
+  ) {
 
     setText(
       "disclaimer-eyebrow",
       disclaimer.label
     );
+
 
     setText(
       "disclaimer-title",
@@ -3329,6 +3356,7 @@ function renderLegal() {
 
     const disclaimerContent =
       $("disclaimer-content");
+
 
     if (disclaimerContent) {
 
@@ -3349,9 +3377,9 @@ function renderLegal() {
 }
 
 
-/* ==============================================================
-   MOBILE ACTIONS
-============================================================== */
+/* ================================================================
+   22. MOBILE ACTIONS
+================================================================ */
 
 function renderMobileActions() {
 
@@ -3372,6 +3400,7 @@ function renderMobileActions() {
 
   const container =
     $("mobile-sticky-actions");
+
 
   if (!container) {
     return;
@@ -3420,7 +3449,10 @@ function renderMobileActions() {
 
 
       const link =
-        document.createElement("a");
+        document.createElement(
+          "a"
+        );
+
 
       link.href =
         href;
@@ -3447,9 +3479,11 @@ function renderMobileActions() {
         )}"></i>
 
         <span>
+
           ${escapeHTML(
             item.label
           )}
+
         </span>
 
       `;
@@ -3462,12 +3496,15 @@ function renderMobileActions() {
     }
   );
 
+
+  refreshIcons();
+
 }
 
 
-/* ==============================================================
-   THEME
-============================================================== */
+/* ================================================================
+   23. THEME
+================================================================ */
 
 function initializeTheme() {
 
@@ -3523,7 +3560,9 @@ function initializeTheme() {
 
       const current =
         document.documentElement
-          .getAttribute("data-theme");
+          .getAttribute(
+            "data-theme"
+          );
 
 
       const next =
@@ -3554,7 +3593,9 @@ function initializeTheme() {
 }
 
 
-function applyTheme(theme) {
+function applyTheme(
+  theme
+) {
 
   if (
     theme !== "dark" &&
@@ -3608,9 +3649,9 @@ function applyTheme(theme) {
 }
 
 
-/* ==============================================================
-   MOBILE MENU
-============================================================== */
+/* ================================================================
+   24. MOBILE MENU
+================================================================ */
 
 function initializeMobileMenu() {
 
@@ -3625,7 +3666,9 @@ function initializeMobileMenu() {
     !button ||
     !navigation
   ) {
+
     return;
+
   }
 
 
@@ -3639,9 +3682,17 @@ function initializeMobileMenu() {
         );
 
 
+      document.body.classList.toggle(
+        "mobile-menu-open",
+        isOpen
+      );
+
+
       button.setAttribute(
         "aria-expanded",
-        String(isOpen)
+        String(
+          isOpen
+        )
       );
 
 
@@ -3671,12 +3722,20 @@ function initializeMobileMenu() {
     event => {
 
       if (
-        event.target.closest("a")
+        event.target.closest(
+          "a"
+        )
       ) {
 
         navigation.classList.remove(
           "open"
         );
+
+
+        document.body.classList.remove(
+          "mobile-menu-open"
+        );
+
 
         button.setAttribute(
           "aria-expanded",
@@ -3701,18 +3760,84 @@ function initializeMobileMenu() {
 }
 
 
-/* ==============================================================
-   SMOOTH SCROLLING
-============================================================== */
+/* ================================================================
+   25. RESPONSIVE MENU SAFETY
+================================================================ */
 
-function initializeSmoothScrolling() {
+function initializeResponsiveMenuSafety() {
+
+  const navigation =
+    $("mobile-navigation");
+
+  const button =
+    $("mobile-menu-button");
+
 
   if (
-    !SITE_CONFIG.theme.smoothScrolling
+    !navigation ||
+    !button
   ) {
+
     return;
+
   }
 
+
+  const closeMenuIfDesktop =
+    () => {
+
+      if (
+        window.innerWidth >
+        900
+      ) {
+
+        navigation.classList.remove(
+          "open"
+        );
+
+
+        document.body.classList.remove(
+          "mobile-menu-open"
+        );
+
+
+        button.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+
+
+        button.innerHTML = `
+
+          <i data-lucide="menu"></i>
+
+        `;
+
+
+        refreshIcons();
+
+      }
+
+    };
+
+
+  window.addEventListener(
+    "resize",
+    closeMenuIfDesktop,
+    {
+      passive:
+        true
+    }
+  );
+
+}
+
+
+/* ================================================================
+   26. SMOOTH SCROLLING
+================================================================ */
+
+function initializeSmoothScrolling() {
 
   document.addEventListener(
     "click",
@@ -3739,7 +3864,9 @@ function initializeSmoothScrolling() {
         !href ||
         href === "#"
       ) {
+
         return;
+
       }
 
 
@@ -3754,28 +3881,45 @@ function initializeSmoothScrolling() {
       }
 
 
-      /*
-      Legal modals use their own handling.
-      */
-
-      if (
-        href === "#privacy" ||
-        href === "#disclaimer"
-      ) {
-        return;
-      }
-
-
       event.preventDefault();
 
 
-      target.scrollIntoView({
-        behavior:
-          "smooth",
+      target.scrollIntoView(
+        {
+          behavior:
+            SITE_CONFIG.theme.smoothScrolling
+              ? "smooth"
+              : "auto",
 
-        block:
-          "start"
-      });
+          block:
+            "start"
+        }
+      );
+
+
+      /*
+      Update URL without forcing a jump.
+      */
+
+      try {
+
+        history.pushState(
+          null,
+          "",
+          href
+        );
+
+      }
+      catch (
+        error
+      ) {
+
+        console.warn(
+          "Unable to update URL.",
+          error
+        );
+
+      }
 
     }
   );
@@ -3783,58 +3927,123 @@ function initializeSmoothScrolling() {
 }
 
 
-/* ==============================================================
-   MODALS
-============================================================== */
+/* ================================================================
+   27. BACK TO TOP
+================================================================ */
 
-function initializeModalHandling() {
+function initializeBackToTop() {
 
-  const links = [
+  const button =
+    $("back-to-top");
 
+
+  if (!button) {
+    return;
+  }
+
+
+  const updateVisibility =
+    () => {
+
+      const shouldShow =
+        window.scrollY >
+        500;
+
+
+      button.hidden =
+        !shouldShow;
+
+
+      button.classList.toggle(
+        "visible",
+        shouldShow
+      );
+
+    };
+
+
+  window.addEventListener(
+    "scroll",
+    updateVisibility,
     {
-      href:
-        "#privacy",
-
-      modal:
-        "privacy"
-    },
-
-    {
-      href:
-        "#disclaimer",
-
-      modal:
-        "disclaimer"
+      passive:
+        true
     }
+  );
 
-  ];
+
+  button.addEventListener(
+    "click",
+    () => {
+
+      window.scrollTo(
+        {
+          top:
+            0,
+
+          behavior:
+            SITE_CONFIG.theme.smoothScrolling
+              ? "smooth"
+              : "auto"
+        }
+      );
+
+    }
+  );
 
 
-  links.forEach(
-    item => {
+  updateVisibility();
 
-      document
-        .querySelectorAll(
-          `a[href="${item.href}"]`
-        )
-        .forEach(
-          link => {
+}
 
-            link.addEventListener(
-              "click",
-              event => {
 
-                event.preventDefault();
+/* ================================================================
+   28. LEGAL MODALS
+================================================================ */
 
-                openModal(
-                  item.modal
-                );
+function initializeLegalModals() {
 
-              }
+  const modalTriggers =
+    document.querySelectorAll(
+      "[data-legal-modal]"
+    );
+
+
+  modalTriggers.forEach(
+    trigger => {
+
+      trigger.addEventListener(
+        "click",
+        event => {
+
+          event.preventDefault();
+
+
+          const modalId =
+            trigger.getAttribute(
+              "data-legal-modal"
             );
 
+
+          const modal =
+            $(modalId);
+
+
+          if (!modal) {
+            return;
           }
-        );
+
+
+          modal.hidden =
+            false;
+
+
+          document.body.classList.add(
+            "modal-open"
+          );
+
+        }
+      );
 
     }
   );
@@ -3851,7 +4060,24 @@ function initializeModalHandling() {
           "click",
           () => {
 
-            closeAllModals();
+            const modal =
+              button.closest(
+                ".legal-modal"
+              );
+
+
+            if (!modal) {
+              return;
+            }
+
+
+            modal.hidden =
+              true;
+
+
+            document.body.classList.remove(
+              "modal-open"
+            );
 
           }
         );
@@ -3872,10 +4098,17 @@ function initializeModalHandling() {
           event => {
 
             if (
-              event.target === modal
+              event.target ===
+              modal
             ) {
 
-              closeAllModals();
+              modal.hidden =
+                true;
+
+
+              document.body.classList.remove(
+                "modal-open"
+              );
 
             }
 
@@ -3891,12 +4124,32 @@ function initializeModalHandling() {
     event => {
 
       if (
-        event.key === "Escape"
+        event.key !==
+        "Escape"
       ) {
 
-        closeAllModals();
+        return;
 
       }
+
+
+      document
+        .querySelectorAll(
+          ".legal-modal:not([hidden])"
+        )
+        .forEach(
+          modal => {
+
+            modal.hidden =
+              true;
+
+          }
+        );
+
+
+      document.body.classList.remove(
+        "modal-open"
+      );
 
     }
   );
@@ -3904,52 +4157,9 @@ function initializeModalHandling() {
 }
 
 
-function openModal(id) {
-
-  const modal =
-    $(id);
-
-  if (!modal) {
-    return;
-  }
-
-
-  modal.hidden =
-    false;
-
-  document.body.classList.add(
-    "modal-open"
-  );
-
-}
-
-
-function closeAllModals() {
-
-  document
-    .querySelectorAll(
-      ".legal-modal"
-    )
-    .forEach(
-      modal => {
-
-        modal.hidden =
-          true;
-
-      }
-    );
-
-
-  document.body.classList.remove(
-    "modal-open"
-  );
-
-}
-
-
-/* ==============================================================
-   IMAGE FALLBACKS
-============================================================== */
+/* ================================================================
+   29. IMAGE FALLBACKS
+================================================================ */
 
 function initializeImageFallbacks() {
 
@@ -3977,73 +4187,98 @@ function initializeImageFallbacks() {
 }
 
 
-/* ==============================================================
-   ACCESSIBILITY
-============================================================== */
+/* ================================================================
+   30. ACTIVE NAVIGATION
+================================================================ */
 
-function initializeKeyboardAccessibility() {
+function initializeActiveNavigation() {
 
-  /*
-  Allow keyboard users to see focus clearly.
-
-  The visual appearance itself is controlled by CSS.
-  */
-
-  document.addEventListener(
-    "keydown",
-    event => {
-
-      if (
-        event.key === "Tab"
-      ) {
-
-        document.body.classList.add(
-          "keyboard-navigation"
-        );
-
-      }
-
-    }
-  );
+  const sections =
+    document.querySelectorAll(
+      "main section[id]"
+    );
 
 
-  document.addEventListener(
-    "mousedown",
-    () => {
+  const links =
+    document.querySelectorAll(
+      ".desktop-navigation a, .mobile-navigation a"
+    );
 
-      document.body.classList.remove(
-        "keyboard-navigation"
-      );
-
-    }
-  );
-
-}
-
-
-/* ==============================================================
-   LUCIDE ICONS
-============================================================== */
-
-function refreshIcons() {
 
   if (
-    typeof lucide === "undefined"
+    !sections.length ||
+    !links.length
   ) {
+
     return;
+
   }
 
 
-  lucide.createIcons();
+  const observer =
+    new IntersectionObserver(
+      entries => {
+
+        entries.forEach(
+          entry => {
+
+            if (
+              !entry.isIntersecting
+            ) {
+
+              return;
+
+            }
+
+
+            const id =
+              entry.target.id;
+
+
+            links.forEach(
+              link => {
+
+                const href =
+                  link.getAttribute(
+                    "href"
+                  );
+
+
+                link.classList.toggle(
+                  "active",
+                  href ===
+                    `#${id}`
+                );
+
+              }
+            );
+
+          }
+        );
+
+      },
+      {
+        rootMargin:
+          "-25% 0px -65% 0px"
+      }
+    );
+
+
+  sections.forEach(
+    section =>
+      observer.observe(
+        section
+      )
+  );
 
 }
 
 
-/* ==============================================================
-   PAGE LOADER
-============================================================== */
+/* ================================================================
+   31. PAGE LOADER
+================================================================ */
 
-function hidePageLoader() {
+function initializePageLoader() {
 
   const loader =
     $("page-loader");
@@ -4054,247 +4289,171 @@ function hidePageLoader() {
   }
 
 
-  window.setTimeout(
+  window.addEventListener(
+    "load",
     () => {
-
-      loader.classList.add(
-        "hidden"
-      );
-
 
       window.setTimeout(
         () => {
 
-          loader.remove();
+          loader.classList.add(
+            "hidden"
+          );
 
         },
-        500
+        250
       );
 
-    },
-    150
+    }
   );
 
 }
 
 
-/* ==============================================================
-   STRUCTURED DATA
-============================================================== */
+/* ================================================================
+   32. INITIAL PAGE SETUP
+================================================================ */
 
-function renderStructuredData() {
+function initializePage() {
 
-  const brand =
-    SITE_CONFIG.brand;
+  if (
+    APP.initialized
+  ) {
 
-  const contact =
-    SITE_CONFIG.contact;
-
-  const office =
-    SITE_CONFIG.office;
-
-  const seo =
-    SITE_CONFIG.seo;
-
-  const website =
-    SITE_CONFIG.website;
-
-
-  const structuredData = {
-
-    "@context":
-      "https://schema.org",
-
-    "@type":
-      "AccountingService",
-
-    "name":
-      brand.firmName,
-
-    "description":
-      seo.description,
-
-    "url":
-      website.url,
-
-    "telephone":
-      contact.phone.display,
-
-    "email":
-      contact.email.display,
-
-    "foundingDate":
-      brand.establishedYear,
-
-    "address": {
-
-      "@type":
-        "PostalAddress",
-
-      "streetAddress":
-        `${office.address.line1}, ${office.address.line2}`,
-
-      "addressLocality":
-        office.address.city,
-
-      "addressRegion":
-        office.address.state,
-
-      "postalCode":
-        office.address.pincode,
-
-      "addressCountry":
-        office.address.country
-
-    },
-
-    "areaServed": [
-
-      {
-        "@type":
-          "City",
-
-        "name":
-          office.address.city
-
-      },
-
-      {
-        "@type":
-          "Country",
-
-        "name":
-          office.address.country
-
-      }
-
-    ],
-
-    "sameAs":
-      getAvailableSocialUrls(),
-
-    "image":
-      resolveAsset(
-        seo.ogImage
-      )
-
-  };
-
-
-  const element =
-    $("structured-data");
-
-
-  if (element) {
-
-    element.textContent =
-      JSON.stringify(
-        structuredData
-      );
+    return;
 
   }
 
-}
 
+  /*
+  Configuration safety
+  */
 
-function getAvailableSocialUrls() {
+  if (
+    typeof SITE_CONFIG ===
+    "undefined"
+  ) {
 
-  return Object.values(
-    SITE_CONFIG.social
-  )
-    .filter(
-      item =>
-        item.enabled &&
-        item.url
-    )
-    .map(
-      item =>
-        item.url
+    console.error(
+      "SITE_CONFIG is not available. Make sure config.js loads before script.js."
     );
 
-}
-
-
-/* ==============================================================
-   UPDATE HEADER ACTIONS
-============================================================== */
-
-function initializeHeaderActions() {
-
-  const whatsapp =
-    getDefaultWhatsAppUrl();
-
-
-  const headerWhatsApp =
-    $("header-whatsapp");
-
-
-  if (headerWhatsApp) {
-
-    headerWhatsApp.href =
-      whatsapp;
-
-    headerWhatsApp.target =
-      "_blank";
-
-    headerWhatsApp.rel =
-      "noopener";
+    return;
 
   }
 
 
-  setText(
-    "header-whatsapp-label",
-    SITE_CONFIG.social.whatsapp.shortLabel
+  APP.initialized =
+    true;
+
+
+  /*
+  Theme first
+  */
+
+  initializeTheme();
+
+
+  /*
+  Header
+  */
+
+  renderHeader();
+
+
+  /*
+  Navigation
+  */
+
+  normalizeNavigation();
+
+  renderNavigation();
+
+
+  /*
+  Page sections
+  */
+
+  renderHero();
+
+  renderQuickAlert();
+
+  renderServices();
+
+  renderAudience();
+
+  renderReviews();
+
+  renderStory();
+
+  renderDigitalOffice();
+
+  renderStartHere();
+
+  initializeUpdates();
+
+  renderContactMethods();
+
+  renderAppointment();
+
+  renderFAQ();
+
+  renderContact();
+
+  renderFooter();
+
+  renderLegal();
+
+  renderMobileActions();
+
+
+  /*
+  Behaviour
+  */
+
+  initializeMobileMenu();
+
+  initializeResponsiveMenuSafety();
+
+  initializeSmoothScrolling();
+
+  initializeBackToTop();
+
+  initializeLegalModals();
+
+  initializeImageFallbacks();
+
+  initializeActiveNavigation();
+
+  initializePageLoader();
+
+
+  /*
+  Icons
+  */
+
+  refreshIcons();
+
+}
+
+
+/* ================================================================
+   33. START
+================================================================ */
+
+if (
+  document.readyState ===
+  "loading"
+) {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializePage
   );
 
 }
+else {
 
-
-/* ==============================================================
-   INITIALIZE STRUCTURED DATA + HEADER
-============================================================== */
-
-
-/*
-We call these separately so that the rest of the application
-remains modular.
-*/
-
-function initializeSecondarySystems() {
-
-  renderStructuredData();
-
-  initializeHeaderActions();
+  initializePage();
 
 }
-
-
-/* ==============================================================
-   DOM READY
-============================================================== */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  () => {
-
-    initializeApplication();
-
-    initializeSecondarySystems();
-
-  }
-);
-
-
-/* ==============================================================
-   WINDOW LOAD
-============================================================== */
-
-window.addEventListener(
-  "load",
-  () => {
-
-    refreshIcons();
-
-  }
-);
