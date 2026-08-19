@@ -1,5 +1,3 @@
-==================== script.js ====================
-
 /*
 ================================================================
  PAVAN REDDY & CO. — WEBSITE APPLICATION
@@ -247,30 +245,6 @@ function getActionUrl(type, message = "") {
 }
 
 
-
-/* ==============================================================
-   NAVIGATION NORMALIZATION
-============================================================== */
-
-function normalizeNavigation() {
-
-  const navigation = SITE_CONFIG.navigation || [];
-
-  const hasClientExperiences = navigation.some(
-    item => item && (
-      item.href === "#client-experiences" ||
-      item.href === "#reviews"
-    )
-  );
-
-  if (!hasClientExperiences) {
-    console.warn(
-      'Add { label: "Client Experiences", href: "#client-experiences" } to SITE_CONFIG.navigation.'
-    );
-  }
-
-}
-
 /* ==============================================================
    INITIAL PAGE SETUP
 ============================================================== */
@@ -304,8 +278,6 @@ function initializeApplication() {
   renderDocumentMetadata();
 
   renderBrand();
-
-  normalizeNavigation();
 
   renderNavigation();
 
@@ -346,7 +318,9 @@ function initializeApplication() {
   initializeTheme();
 
   initializeMobileMenu();
+
   initializeBackToTop();
+
   initializeResponsiveMenuSafety();
 
   initializeSmoothScrolling();
@@ -587,7 +561,9 @@ function renderNavigation() {
       document.createElement("a");
 
     desktopLink.href =
-      item.href === "#reviews" ? "#client-experiences" : item.href;
+      item.href === "#reviews"
+        ? "#client-experiences"
+        : item.href;
 
     desktopLink.textContent =
       item.label;
@@ -601,7 +577,9 @@ function renderNavigation() {
       document.createElement("a");
 
     mobileLink.href =
-      item.href === "#reviews" ? "#client-experiences" : item.href;
+      item.href === "#reviews"
+        ? "#client-experiences"
+        : item.href;
 
     mobileLink.textContent =
       item.label;
@@ -747,17 +725,14 @@ function renderHero() {
   Established
   */
 
-  const heroLabels =
-    SITE_CONFIG.ui?.heroLabels || {};
-
   setText(
     "hero-established",
-    `${heroLabels.since || "Since"} ${brand.establishedYear}`
+    `Since ${brand.establishedYear}`
   );
 
   setText(
     "hero-established-label",
-    heroLabels.practice || "CA Practice"
+    "CA Practice"
   );
 
 
@@ -767,7 +742,7 @@ function renderHero() {
 
   setText(
     "hero-coverage-label",
-    heroLabels.coverageLabel || "WORK WITH US"
+    "WORK WITH US"
   );
 
   setText(
@@ -1473,7 +1448,6 @@ function renderReviews() {
       if (paragraph) {
 
         paragraph.textContent =
-          config.emptyMessage ||
           "We're collecting genuine client experiences. Check back soon.";
 
       }
@@ -3055,22 +3029,19 @@ function renderFooter() {
   Footer labels
   */
 
-  const uiLabels =
-    SITE_CONFIG.ui?.labels || {};
-
   setText(
     "footer-explore-label",
-    uiLabels.footerExplore || "Explore"
+    "Explore"
   );
 
   setText(
     "footer-social-title",
-    uiLabels.footerSocial || "Find us online"
+    "Find us online"
   );
 
   setText(
     "footer-contact-title",
-    uiLabels.footerContact || "Talk to us"
+    "Talk to us"
   );
 
 
@@ -3675,11 +3646,6 @@ function initializeMobileMenu() {
           "open"
         );
 
-      document.body.classList.toggle(
-        "mobile-menu-open",
-        navigation.classList.contains("open")
-      );
-
 
       button.setAttribute(
         "aria-expanded",
@@ -3754,42 +3720,132 @@ function initializeMobileMenu() {
 
 function initializeResponsiveMenuSafety() {
 
-  const navigation = $("mobile-navigation");
-  const button = $("mobile-menu-button");
+  const navigation =
+    $("mobile-navigation");
 
-  if (!navigation || !button) {
+  const button =
+    $("mobile-menu-button");
+
+
+  if (
+    !navigation ||
+    !button
+  ) {
     return;
   }
 
-  const closeMenuIfDesktop = () => {
 
-    if (window.innerWidth > 900) {
+  const closeMenuIfDesktop =
+    () => {
 
-      navigation.classList.remove("open");
+      if (
+        window.innerWidth >
+        900
+      ) {
 
-      document.body.classList.remove(
-        "mobile-menu-open"
-      );
+        navigation.classList.remove(
+          "open"
+        );
 
-      button.setAttribute("aria-expanded", "false");
+        document.body.classList.remove(
+          "mobile-menu-open"
+        );
 
-      button.innerHTML = `
-        <i data-lucide="menu"></i>
-      `;
+        button.setAttribute(
+          "aria-expanded",
+          "false"
+        );
 
-      refreshIcons();
+        button.innerHTML = `
+          <i data-lucide="menu"></i>
+        `;
 
-    }
+        refreshIcons();
 
-  };
+      }
+
+    };
+
 
   window.addEventListener(
     "resize",
     closeMenuIfDesktop,
-    { passive: true }
+    {
+      passive:
+        true
+    }
   );
 
 }
+
+
+/* ==============================================================
+   BACK TO TOP
+============================================================== */
+
+function initializeBackToTop() {
+
+  const button =
+    $("back-to-top");
+
+
+  if (!button) {
+    return;
+  }
+
+
+  const updateVisibility =
+    () => {
+
+      const shouldShow =
+        window.scrollY >
+        500;
+
+
+      button.hidden =
+        !shouldShow;
+
+
+      button.classList.toggle(
+        "visible",
+        shouldShow
+      );
+
+    };
+
+
+  window.addEventListener(
+    "scroll",
+    updateVisibility,
+    {
+      passive:
+        true
+    }
+  );
+
+
+  button.addEventListener(
+    "click",
+    () => {
+
+      window.scrollTo({
+        top:
+          0,
+
+        behavior:
+          SITE_CONFIG.theme.smoothScrolling
+            ? "smooth"
+            : "auto"
+      });
+
+    }
+  );
+
+
+  updateVisibility();
+
+}
+
 
 /* ==============================================================
    SMOOTH SCROLLING
@@ -3872,48 +3928,6 @@ function initializeSmoothScrolling() {
 
 }
 
-
-
-/* ==============================================================
-   BACK TO TOP
-============================================================== */
-
-function initializeBackToTop() {
-
-  const button = $("back-to-top");
-
-  if (!button) {
-    return;
-  }
-
-  const updateVisibility = () => {
-
-    const shouldShow = window.scrollY > 500;
-
-    button.hidden = !shouldShow;
-    button.classList.toggle("visible", shouldShow);
-
-  };
-
-  window.addEventListener(
-    "scroll",
-    updateVisibility,
-    { passive: true }
-  );
-
-  button.addEventListener(
-    "click",
-    () => {
-      window.scrollTo({
-        top: 0,
-        behavior: SITE_CONFIG.theme.smoothScrolling ? "smooth" : "auto"
-      });
-    }
-  );
-
-  updateVisibility();
-
-}
 
 /* ==============================================================
    MODALS
@@ -4400,6 +4414,33 @@ function initializeSecondarySystems() {
   initializeHeaderActions();
 
 }
+
+
+
+/* ==============================================================
+   LOADER SAFETY
+============================================================== */
+
+window.setTimeout(
+  () => {
+
+    const loader =
+      $("page-loader");
+
+    if (
+      loader &&
+      !loader.classList.contains("hidden")
+    ) {
+
+      loader.classList.add(
+        "hidden"
+      );
+
+    }
+
+  },
+  5000
+);
 
 
 /* ==============================================================
