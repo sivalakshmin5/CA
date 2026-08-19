@@ -1087,7 +1087,6 @@ html[data-theme="light"]
 
 
 .hero h1 {
-
   max-width:
     760px;
 
@@ -1096,9 +1095,9 @@ html[data-theme="light"]
 
   font-size:
     clamp(
-      3rem,
-      6vw,
-      5.7rem
+      2.6rem,
+      4.8vw,
+      4.5rem
     );
 
   line-height:
